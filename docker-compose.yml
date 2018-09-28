@@ -1,0 +1,43 @@
+#version: '3'
+# to use memory limit feature in docker-compose, should downgrade version to '2'
+version: '2'
+services:
+  discovery-service:
+    mem_limit: 1280M
+    image: springbootstudy_discovery-service
+    entrypoint: java -jar /app.jar
+    ports:
+     - "8081:8081"
+    environment:
+     - server.port=$EUREKA_SERVER_PORT
+    restart: always
+  inventory-service:
+    mem_limit: 1280M
+    image: springbootstudy_inventory-service
+    entrypoint: java -jar /app.jar
+    ports:
+     - "8082:8082"
+    environment:
+     - server.port=8082
+     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
+    links:
+     - discovery-service
+    depends_on:
+     - discovery-service
+    restart: always
+  user-service:
+    mem_limit: 1280M
+    image: springbootstudy_user-service
+    entrypoint: java -jar /app.jar
+    ports:
+     - "8083:8083"
+    environment:
+     - server.port=8083
+     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
+    links:
+     - discovery-service
+     - inventory-service
+    depends_on:
+    - discovery-service
+    - inventory-service
+    restart: always

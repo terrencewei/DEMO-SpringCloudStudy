@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        maven { url "https://repo.spring.io/libs-release" }
+        mavenLocal()
+        jcenter()
+    }
+}
+plugins {
+    id "org.springframework.boot" version "2.0.2.RELEASE"
+}
+
+ext {
+    libs = [
+            springcloud: [
+                    "org.springframework.boot:spring-boot-starter",
+                    "org.springframework.boot:spring-boot-starter-actuator",
+                    "org.springframework.cloud:spring-cloud-starter-netflix-hystrix",
+                    "org.springframework.cloud:spring-cloud-starter-config",
+                    "org.springframework.cloud:spring-cloud-starter-openfeign",
+                    "org.springframework.cloud:spring-cloud-starter-netflix-turbine",
+                    "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client",
+                    "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
+            ],
+            test       : [
+                    "org.springframework.boot:spring-boot-starter-test"
+            ]
+    ]
+}
+
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
+        maven { url "https://repo.spring.io/libs-release" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "http://maven.springframework.org/milestone" }
+        maven { url "http://maven.springframework.org/snapshot" }
+        maven { url "http://repo.spring.io/libs-milestone" }
+    }
+}
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Finchley.SR1'
+        }
+    }
+
+    artifactId = it.name
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+}
+

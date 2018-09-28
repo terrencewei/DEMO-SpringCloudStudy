@@ -1,0 +1,14 @@
+dependencies {
+    compile libs.springcloud
+    testCompile libs.test
+}
+
+jar {
+    enabled = true
+}
+
+bootJar {
+    baseName = 'app'
+    version = '0.1'
+    enabled = true
+}

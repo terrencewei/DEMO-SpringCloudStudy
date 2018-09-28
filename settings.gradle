@@ -1,0 +1,9 @@
+rootProject.name = 'springcloudstudy'
+
+include 'discovery-service'
+include 'user-service'
+include 'inventory-service'
+
+rootProject.children.each{
+    it.name="${it.name}"
+}
