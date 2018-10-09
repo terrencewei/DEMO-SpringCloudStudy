@@ -2,18 +2,24 @@
 # to use memory limit feature in docker-compose, should downgrade version to '2'
 version: '2'
 services:
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
   discovery-service:
     mem_limit: 1280M
-    image: springbootstudy_discovery-service
+    image: springcloudstudy_discovery-service
     entrypoint: java -jar /app.jar
     ports:
      - "8081:8081"
     environment:
      - server.port=$EUREKA_SERVER_PORT
     restart: always
-  inventory-service:
+  catalog-service:
     mem_limit: 1280M
-    image: springbootstudy_inventory-service
+    image: springcloudstudy_catalog-service
     entrypoint: java -jar /app.jar
     ports:
      - "8082:8082"
@@ -25,9 +31,9 @@ services:
     depends_on:
      - discovery-service
     restart: always
-  user-service:
+  inventory-service:
     mem_limit: 1280M
-    image: springbootstudy_user-service
+    image: springcloudstudy_inventory-service
     entrypoint: java -jar /app.jar
     ports:
      - "8083:8083"
@@ -36,8 +42,42 @@ services:
      - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
-     - inventory-service
+     - catalog-service
     depends_on:
-    - discovery-service
-    - inventory-service
+     - discovery-service
+     - catalog-service
+    restart: always
+  pricing-service:
+    mem_limit: 1280M
+    image: springcloudstudy_pricing-service
+    entrypoint: java -jar /app.jar
+    ports:
+     - "8084:8084"
+    environment:
+     - server.port=8084
+     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
+    links:
+     - discovery-service
+    depends_on:
+     - discovery-service
+    restart: always
+  web-storefront:
+    mem_limit: 1280M
+    image: springcloudstudy_web-storefront
+    entrypoint: java -jar /app.jar
+    ports:
+     - "9000:9000"
+    environment:
+     - server.port=9000
+     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
+    links:
+     - discovery-service
+     - inventory-service
+     - pricing-service
+     - catalog-service
+    depends_on:
+     - discovery-service
+     - inventory-service
+     - pricing-service
+     - catalog-service
     restart: always

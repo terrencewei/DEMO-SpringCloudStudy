@@ -25,6 +25,9 @@ hs_err_pid*
 # terrence wei
 .idea
 .gradle
+catalog-service/build
+core/build
 discovery-service/build
 inventory-service/build
-user-service/build
+pricing-service/build
+web-storefront/build

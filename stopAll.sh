@@ -15,7 +15,9 @@ docker-compose rm -f
 sleep 2
 
 # Remove old docker images
-removeDockerImage springbootstudy_discovery-service
-removeDockerImage springbootstudy_user-service
-removeDockerImage springbootstudy_inventory-service
+removeDockerImage springcloudstudy_discovery-service
+removeDockerImage springcloudstudy_inventory-service
+removeDockerImage springcloudstudy_pricing-service
+removeDockerImage springcloudstudy_catalog-service
+removeDockerImage springcloudstudy_web-storefront
 sleep 2

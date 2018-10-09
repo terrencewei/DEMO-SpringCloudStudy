@@ -4,14 +4,6 @@ set -e
 export EUREKA_SERVER_IP=172.17.118.200
 export EUREKA_SERVER_PORT=8081
 
-# function definition
-removeDockerImage()
-{
-if $(docker images | grep -q $1)
-then
-    docker images|grep $1|awk '{print $3 }'| xargs docker rmi
-fi
-}
 buildDockerImage()
 {
 docker build \
@@ -26,24 +18,18 @@ export DOCKER_IP=$(docker-machine ip $(docker-machine active))
 # docker-machine doesn't exist in Linux, assign default ip if it's not set
 DOCKER_IP=${DOCKER_IP:-0.0.0.0}
 
-# Remove existing containers
-docker-compose stop
-docker-compose rm -f
-sleep 2
-
-# Remove old docker images
-removeDockerImage springbootstudy_discovery-service
-removeDockerImage springbootstudy_inventory-service
-removeDockerImage springbootstudy_user-service
-sleep 2
+# stop and remove all exist images firstly
+sh stopAll.sh
 
 # Build the project and docker images
 gradle clean bootJar;
 
 # Build new docker images
-buildDockerImage springbootstudy_discovery-service discovery-service
-buildDockerImage springbootstudy_inventory-service inventory-service
-buildDockerImage springbootstudy_user-service user-service
+buildDockerImage springcloudstudy_discovery-service discovery-service
+buildDockerImage springcloudstudy_inventory-service inventory-service
+buildDockerImage springcloudstudy_pricing-service pricing-service
+buildDockerImage springcloudstudy_catalog-service catalog-service
+buildDockerImage springcloudstudy_web-storefront web-storefront
 sleep 2
 # Start the discovery service next and wait
 docker-compose up -d discovery-service
@@ -57,5 +43,8 @@ while [ -z ${DISCOVERY_SERVICE_READY} ]; do
 done
 
 # Start the other service containers
+docker-compose up -d mysql
 docker-compose up -d inventory-service
-docker-compose up -d user-service
+docker-compose up -d pricing-service
+docker-compose up -d catalog-service
+docker-compose up -d web-storefront

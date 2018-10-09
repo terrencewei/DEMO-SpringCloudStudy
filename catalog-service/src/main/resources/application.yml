@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: catalog-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.17.118.200:3306/test?&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
+  jpa:
+    database: mysql
+    hibernate:
+        ddl-auto: update
+    show-sql: true
+server:
+  port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+  instance:
+      prefer-ip-address: true
+# custom config
+categoryIds: A,B,C,D

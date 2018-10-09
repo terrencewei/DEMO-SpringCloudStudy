@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: web-storefront
+  # support jsp view
+  mvc:
+    view:
+      suffix: .jsp
+      prefix: /WEB-INF/jsp/
+  # dsiable spring default view thymeleaf 
+  thymeleaf:
+    cache: false
+    enabled: false
+server:
+  port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+  instance:
+      prefer-ip-address: true
+ribbon:
+  eager-load:
+    enabled: true
+    clients: inventory-service

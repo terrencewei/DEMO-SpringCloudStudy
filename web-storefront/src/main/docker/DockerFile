@@ -1,0 +1,2 @@
+FROM java:8
+ADD app-0.1.jar app.jar
