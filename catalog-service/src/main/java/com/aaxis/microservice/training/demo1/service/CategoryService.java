@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class CategoryService {
     @Autowired
-    private CategoryDao pCategoryDao;
+    private CategoryDao mCategoryDao;
 
     @Autowired
     private Environment env;
@@ -22,19 +22,19 @@ public class CategoryService {
         String[] categoryIds = env.getProperty("categoryIds").split(",");
 
         for (String categoryId : categoryIds) {
-            if (pCategoryDao.findById(categoryId).isPresent()) {
+            if (mCategoryDao.findById(categoryId).isPresent()) {
                 continue;
             }
             Category category = new Category();
             category.setId(categoryId);
             category.setName("Category_" + categoryId);
-            pCategoryDao.save(category);
+            mCategoryDao.save(category);
         }
     }
 
 
 
     public List<Category> findAllCategories() {
-        return pCategoryDao.findAll();
+        return mCategoryDao.findAll();
     }
 }

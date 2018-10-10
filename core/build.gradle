@@ -1,6 +1,5 @@
 dependencies {
     compile libs.springcloud
-    compile libs.data
 }
 
 jar {

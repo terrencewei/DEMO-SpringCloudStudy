@@ -21,3 +21,5 @@ eureka:
       prefer-ip-address: true
 # custom config
 categoryIds: A,B,C,D
+maxProductCountInCategory: 10
+checkProductExistBeforeAdding: true

@@ -1,5 +1,5 @@
 dependencies {
-    compile libs.springcloud
+    compile project(":core")
     testCompile libs.test
 }
 

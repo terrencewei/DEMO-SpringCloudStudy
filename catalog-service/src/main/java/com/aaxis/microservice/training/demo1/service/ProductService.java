@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,15 +37,15 @@ public class ProductService {
         if (categories == null) {
             return;
         }
-        int maxProductCoundInCategory = Integer.parseInt(env.getProperty("maxProductCountInCategory"));
+        int maxProductCountInCategory = Integer.parseInt(env.getProperty("maxProductCountInCategory"));
 
         String checkProductExistBeforeAdding = env.getProperty("checkProductExistBeforeAdding");
 
         for (Category category : categories) {
 
-            int randomProductSize = new Random().nextInt(maxProductCoundInCategory / 2) + maxProductCoundInCategory / 2;
+            int randomProductSize = new Random().nextInt(maxProductCountInCategory / 2) + maxProductCountInCategory / 2;
 
-            List<Product> productist = new ArrayList<>(PRODUCT_BATCH_SIZE);
+            List<Product> productList = new ArrayList<>(PRODUCT_BATCH_SIZE);
 
             for (int i = 1; i <= randomProductSize; i++) {
                 String productId = category.getId() + "_" + i;
@@ -61,21 +60,21 @@ public class ProductService {
                 product.setPriority(new Random().nextInt(100));
                 Date date = randomDate("2010-01-01", "2018-01-01");
                 product.setCreatedDate(date);
-                product.setPrice(new BigDecimal(new Random().nextDouble() * 1000).setScale(2, BigDecimal.ROUND_HALF_UP)
-                        .doubleValue());
+//                product.setPrice(new BigDecimal(new Random().nextDouble() * 1000).setScale(2, BigDecimal.ROUND_HALF_UP)
+                //                        .doubleValue());
                 product.setCategory(category);
                 //                mProductDao.save(product);
-                productist.add(product);
+                productList.add(product);
 
-                if (productist.size() % PRODUCT_BATCH_SIZE == 0) {
-                    mProductDao.saveAll(productist);
-                    productist.clear();
+                if (productList.size() % PRODUCT_BATCH_SIZE == 0) {
+                    mProductDao.saveAll(productList);
+                    productList.clear();
                 }
             }
 
-            if (!productist.isEmpty()) {
-                mProductDao.saveAll(productist);
-                productist.clear();
+            if (!productList.isEmpty()) {
+                mProductDao.saveAll(productList);
+                productList.clear();
             }
         }
     }
@@ -83,7 +82,7 @@ public class ProductService {
 
 
     public List<Product> findProductsByCategoryId(String categoryId) {
-        return mProductDao.findProductsByCategory_Id(categoryId);
+        return mProductDao.findProductsByCategoryId(categoryId);
     }
 
 

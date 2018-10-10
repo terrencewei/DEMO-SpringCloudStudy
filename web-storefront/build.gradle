@@ -2,9 +2,7 @@ dependencies {
     compile project(":inventory-service")
     compile project(":catalog-service")
     compile project(":pricing-service")
-    compile libs.springcloud
     compile libs.web
-    compile libs.data
     compile libs.jsp
     testCompile libs.test
 }

@@ -19,7 +19,4 @@ eureka:
       defaultZone: ${eurekaClientServiceUrlDefaultZone}
   instance:
       prefer-ip-address: true
-# custom config
-categoryIds: A,B,C,D
-maxProductCountInCategory: 100
-checkProductExistBeforeAdding: true
+
