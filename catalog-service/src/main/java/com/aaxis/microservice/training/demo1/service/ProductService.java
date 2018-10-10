@@ -8,13 +8,18 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -23,6 +28,15 @@ public class ProductService {
 
     @Autowired
     private ProductDao mProductDao;
+
+    //    @Autowired
+    //    private FeignInventoryService mFeignInventoryService;
+    //
+    //    @Autowired
+    //    private FeignPricingService mFeignPricingService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private Environment env;
@@ -60,7 +74,7 @@ public class ProductService {
                 product.setPriority(new Random().nextInt(100));
                 Date date = randomDate("2010-01-01", "2018-01-01");
                 product.setCreatedDate(date);
-//                product.setPrice(new BigDecimal(new Random().nextDouble() * 1000).setScale(2, BigDecimal.ROUND_HALF_UP)
+                //                product.setPrice(new BigDecimal(new Random().nextDouble() * 1000).setScale(2, BigDecimal.ROUND_HALF_UP)
                 //                        .doubleValue());
                 product.setCategory(category);
                 //                mProductDao.save(product);
@@ -77,6 +91,11 @@ public class ProductService {
                 productList.clear();
             }
         }
+
+        restTemplate.getForObject("http://172.17.118.200:8081/price/initData", Map.class);
+        restTemplate.getForObject("http://172.17.118.200:8082/inventory/initData", Map.class);
+        //        mFeignPricingService.initData();
+        //        mFeignInventoryService.initData();
     }
 
 
@@ -86,74 +105,77 @@ public class ProductService {
     }
 
 
+
     public Page<Product> findProductsInPLP(String categoryId, int page, String sortName, String sortValue) {
-        return null;
+        long startTime = System.currentTimeMillis();
+        //        Specification<Product> spec = new Specification<Product>() {
+        //            @Nullable
+        //            @Override
+        //            public Predicate toPredicate(Root<Product> pRoot, CriteriaQuery<?> pCriteriaQuery,
+        //                    CriteriaBuilder pCriteriaBuilder) {
+        //                Path<Category> name = pRoot.get("category");
+        //                Predicate p = pCriteriaBuilder.equal(name.as(Category.class), mCategoryDao.findById(categoryId).get());
+        //                return p;
+        //            }
+        //        };
+        Specification<Product> spec = (pRoot, pCriteriaQuery, pCriteriaBuilder) -> {
+            Path<Category> name = pRoot.get("category");
+            Predicate p = pCriteriaBuilder.equal(name.as(Category.class), mCategoryDao.findById(categoryId).get());
+            return p;
+        };
+
+        Pageable pageable = null;
+
+        if (sortName != null) {
+            Sort sort = new Sort("ASC".equalsIgnoreCase(sortValue) ? QSort.Direction.ASC : QSort.Direction.DESC,
+                    sortName);
+            pageable = new PageRequest(page - 1, 20, sort);
+        } else {
+            pageable = new PageRequest(page - 1, 20);
+        }
+
+        Page<Product> pageResult = mProductDao.findAll(spec, pageable);
+        addPriceAndInventory(pageResult.getContent());
+        long cost = System.currentTimeMillis() - startTime;
+        System.out.println("COST_TIME:" + cost);
+        return pageResult;
     }
 
-    //
-    //    public Page<Product> findProductsInPLP(String categoryId, int page, String sortName, String sortValue) {
-    //        long startTime = System.currentTimeMillis();
-    //        Specification<Product> spec = new Specification<Product>() {
-    //            @Nullable
-    //            @Override
-    //            public Predicate toPredicate(Root<Product> pRoot, CriteriaQuery<?> pCriteriaQuery,
-    //                    CriteriaBuilder pCriteriaBuilder) {
-    //                Path<Category> name = pRoot.get("category");
-    //                Predicate p = pCriteriaBuilder.equal(name.as(Category.class), mCategoryDao.findById(categoryId).get());
-    //                return p;
-    //            }
-    //        };
-    //
-    //        Pageable pageable = null;
-    //
-    //        if (sortName != null) {
-    //            Sort sort = new Sort("ASC".equalsIgnoreCase(sortValue) ? QSort.Direction.ASC : QSort.Direction.DESC,
-    //                    sortName);
-    //            pageable = new PageRequest(page - 1, 20, sort);
-    //        } else {
-    //            pageable = new PageRequest(page - 1, 20);
-    //        }
-    //
-    //        Page<Product> pageResult = mProductDao.findAll(spec, pageable);
-    //        addPriceAndInventory(pageResult.getContent());
-    //        long cost = System.currentTimeMillis() - startTime;
-    //        System.out.println("COST_TIME:" + cost);
-    //        return pageResult;
-    //    }
-    //
-    //
-    //
+
+
     public Page<Product> searchProducts(int page, String productId, String name, String sortName, String sortValue) {
 
         // implemente this method.
 
         return null;
     }
-    //
-    //
-    //
-    //    public void addPriceAndInventory(List<Product> products) {
-    //        for (Product product : products) {
-    //            product.setPrice(getProductPrice(product.getId()));
-    //            product.setStock(getProductInventory(product.getId()));
-    //        }
-    //    }
-    //
-    //
-    //
-    //    public double getProductPrice(String pProductId) {
-    //        Double price = (Double) ((Map) restTemplate
-    //                .getForObject("http://localhost:8081/price/" + pProductId, Map.class)).get("price");
-    //        return price;
-    //    }
-    //
-    //
-    //
-    //    public int getProductInventory(String pProductId) {
-    //        Integer stock = (Integer) ((Map) restTemplate
-    //                .getForObject("http://localhost:8082/inventory/" + pProductId, Map.class)).get("stock");
-    //        return stock;
-    //    }
+
+
+
+    public void addPriceAndInventory(List<Product> products) {
+        for (Product product : products) {
+            product.setPrice(getProductPrice(product.getId()));
+            product.setStock(getProductInventory(product.getId()));
+        }
+    }
+
+
+
+    public double getProductPrice(String pProductId) {
+        Double price = (Double) ((Map) restTemplate
+                .getForObject("http://172.17.118.200:8081/api/price/" + pProductId, Map.class)).get("price");
+        return price;
+        //        return mFeignPricingService.findPrice(pProductId).getPrice();
+    }
+
+
+
+    public int getProductInventory(String pProductId) {
+        Integer stock = (Integer) ((Map) restTemplate
+                .getForObject("http://172.17.118.200:8082//api/inventory/" + pProductId, Map.class)).get("stock");
+        return stock;
+        //        return mFeignInventoryService.findInventory(pProductId).getStock();
+    }
 
 
 

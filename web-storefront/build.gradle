@@ -1,9 +1,9 @@
 dependencies {
-    compile project(":inventory-service")
+    compile project(":core")
     compile project(":catalog-service")
-    compile project(":pricing-service")
     compile libs.web
     compile libs.jsp
+    runtime "org.apache.tomcat.embed:tomcat-embed-jasper"
     testCompile libs.test
 }
 

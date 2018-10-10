@@ -1,5 +1,6 @@
 dependencies {
     compile libs.springcloud
+    compile libs.data
 }
 
 jar {
@@ -7,7 +8,5 @@ jar {
 }
 
 bootJar {
-    baseName = 'app'
-    version = '0.1'
-    enabled = true
+    enabled = false
 }

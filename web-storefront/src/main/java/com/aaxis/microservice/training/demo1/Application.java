@@ -1,15 +1,12 @@
 package com.aaxis.microservice.training.demo1;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-@EnableDiscoveryClient
-@EnableFeignClients
 @SpringBootApplication
 public class Application {
 
@@ -19,10 +16,13 @@ public class Application {
 
 
 
-    @LoadBalanced
-    @Bean
-    RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
+    @Autowired
+    private RestTemplateBuilder mRestTemplateBuilder;
 
+
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return mRestTemplateBuilder.build();
+    }
 }

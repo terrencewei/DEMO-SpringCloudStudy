@@ -26,15 +26,14 @@ ext {
                     "org.apache.commons:commons-lang3"
             ],
             data: [
-                    "org.springframework.boot:spring-boot-starter-data-jpa",
                     "org.springframework.data:spring-data-commons",
+                    "org.springframework.boot:spring-boot-starter-data-jpa",
                     "mysql:mysql-connector-java"
             ],
             jsp: [
                     "javax.servlet:javax.servlet-api",
                     "javax.servlet:jstl",
-                    "org.springframework.boot:spring-boot-starter-tomcat",
-                    "org.apache.tomcat.embed:tomcat-embed-jasper"
+                    "org.springframework.boot:spring-boot-starter-tomcat"
             ],
             test       : [
                     "org.springframework.boot:spring-boot-starter-test"

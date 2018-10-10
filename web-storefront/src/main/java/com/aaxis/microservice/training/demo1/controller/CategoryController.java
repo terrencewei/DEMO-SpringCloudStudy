@@ -22,6 +22,8 @@ public class CategoryController {
     @Autowired
     private ProductService mProductService;
 
+
+
     @GetMapping("/initData")
     public String initData() {
         mCategoryService.initData();
@@ -29,13 +31,18 @@ public class CategoryController {
         return "redirect:/login";
     }
 
-    @GetMapping(value = {"/{categoryId}/{page}/{sortName}/{sortValue}", "/{categoryId}/{page}"})
-    public String findProductsByCategory(@PathVariable("categoryId") String categoryId, @PathVariable(name = "page", required = false) String page, @PathVariable(name = "sortName", required = false) String sortName, @PathVariable(name = "sortValue", required = false) String sortValue, HttpServletRequest request) {
-        ProductResult productResult = ((RestCategoryController) SpringUtil.getBean("restCategoryController")).restFindProductsByCategory(categoryId, page, sortName, sortValue);
+
+
+    @GetMapping(value = { "/{categoryId}/{page}/{sortName}/{sortValue}", "/{categoryId}/{page}" })
+    public String findProductsByCategory(@PathVariable("categoryId") String categoryId,
+            @PathVariable(name = "page", required = false) String page,
+            @PathVariable(name = "sortName", required = false) String sortName,
+            @PathVariable(name = "sortValue", required = false) String sortValue, HttpServletRequest request) {
+
+        ProductResult productResult = ((RestCategoryController) SpringUtil.getBean("restCategoryController"))
+                .restFindProductsByCategory(categoryId, page, sortName, sortValue);
         request.setAttribute("productResult", productResult);
         return "/category";
     }
-
-
 
 }

@@ -1,24 +1,26 @@
 spring:
   application:
     name: web-storefront
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.17.118.200:3306/test?&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 123abcABC
+  jpa:
+    database: mysql
+    hibernate:
+        ddl-auto: update
+    show-sql: true
   # support jsp view
   mvc:
     view:
+      prefix: /WEB-INF/page/
       suffix: .jsp
-      prefix: /WEB-INF/jsp/
-  # dsiable spring default view thymeleaf 
-  thymeleaf:
-    cache: false
-    enabled: false
 server:
-  port: 8080
-eureka:
-  client:
-    service-url:
-      defaultZone: ${eurekaClientServiceUrlDefaultZone}
-  instance:
-      prefer-ip-address: true
-ribbon:
-  eager-load:
-    enabled: true
-    clients: inventory-service
+  port: 9000
+#ribbon:
+#  eager-load:
+#    enabled: true
+#    clients:
+#      - catalog-service
+      

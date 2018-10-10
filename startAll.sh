@@ -2,7 +2,7 @@
 set -e
 # config
 export EUREKA_SERVER_IP=172.17.118.200
-export EUREKA_SERVER_PORT=8081
+export EUREKA_SERVER_PORT=7000
 
 buildDockerImage()
 {
@@ -42,8 +42,6 @@ while [ -z ${DISCOVERY_SERVICE_READY} ]; do
   sleep 2
 done
 
-# Start the other service containers
-docker-compose up -d mysql
 docker-compose up -d inventory-service
 docker-compose up -d pricing-service
 docker-compose up -d catalog-service

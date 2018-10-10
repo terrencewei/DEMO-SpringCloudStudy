@@ -7,24 +7,24 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 123abcABC
   discovery-service:
     mem_limit: 1280M
     image: springcloudstudy_discovery-service
     entrypoint: java -jar /app.jar
     ports:
-     - "8081:8081"
+     - "7000:7000"
     environment:
      - server.port=$EUREKA_SERVER_PORT
     restart: always
-  catalog-service:
+  pricing-service:
     mem_limit: 1280M
-    image: springcloudstudy_catalog-service
+    image: springcloudstudy_pricing-service
     entrypoint: java -jar /app.jar
     ports:
-     - "8082:8082"
+     - "8081:8081"
     environment:
-     - server.port=8082
+     - server.port=8081
      - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
@@ -36,25 +36,23 @@ services:
     image: springcloudstudy_inventory-service
     entrypoint: java -jar /app.jar
     ports:
-     - "8083:8083"
+     - "8082:8082"
     environment:
-     - server.port=8083
+     - server.port=8082
      - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
-     - catalog-service
     depends_on:
      - discovery-service
-     - catalog-service
     restart: always
-  pricing-service:
+  catalog-service:
     mem_limit: 1280M
-    image: springcloudstudy_pricing-service
+    image: springcloudstudy_catalog-service
     entrypoint: java -jar /app.jar
     ports:
-     - "8084:8084"
+     - "8083:8083"
     environment:
-     - server.port=8084
+     - server.port=8083
      - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
@@ -72,12 +70,6 @@ services:
      - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
-     - inventory-service
-     - pricing-service
-     - catalog-service
     depends_on:
      - discovery-service
-     - inventory-service
-     - pricing-service
-     - catalog-service
     restart: always

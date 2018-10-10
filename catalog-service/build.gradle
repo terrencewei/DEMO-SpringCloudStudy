@@ -1,6 +1,5 @@
 dependencies {
     compile project(":core")
-    compile libs.data
     testCompile libs.test
 }
 
