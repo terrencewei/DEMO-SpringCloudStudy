@@ -21,6 +21,9 @@ ext {
                     "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client",
                     "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server"
             ],
+            log: [
+                    "org.projectlombok:lombok"
+            ],
             web: [
                     "org.springframework.boot:spring-boot-starter-web",
                     "org.apache.commons:commons-lang3"

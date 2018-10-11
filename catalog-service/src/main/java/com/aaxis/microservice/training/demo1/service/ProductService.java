@@ -15,10 +15,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class ProductService {
@@ -28,14 +30,17 @@ public class ProductService {
     @Autowired
     private ProductDao mProductDao;
 
+    // <<<<<<<<<<<< origin
     //    @Autowired
-    //    private FeignInventoryService mFeignInventoryService;
-    //
-    //    @Autowired
-    //    private FeignPricingService mFeignPricingService;
+    //    private RestTemplate          restTemplate;
+    // ============
+    @Autowired
+    private FeignInventoryService mFeignInventoryService;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private FeignPricingService mFeignPricingService;
+
+    // >>>>>>>>>>>> terrencewei updated
 
     @Autowired
     private Environment env;
@@ -91,10 +96,13 @@ public class ProductService {
             }
         }
 
-        restTemplate.getForObject("http://172.17.118.200:8081/price/initData", Map.class);
-        restTemplate.getForObject("http://172.17.118.200:8082/inventory/initData", Map.class);
-        //        mFeignPricingService.initData();
-        //        mFeignInventoryService.initData();
+        // <<<<<<<<<<<< origin
+        //        restTemplate.getForObject("http://172.17.118.200:8081/api/price/initData", Map.class);
+        //        restTemplate.getForObject("http://172.17.118.200:8082/api/inventory/initData", Map.class);
+        // ============
+        mFeignPricingService.initData();
+        mFeignInventoryService.initData();
+        // >>>>>>>>>>>> terrencewei updated
     }
 
 
@@ -121,7 +129,7 @@ public class ProductService {
         // ============
         Specification<Product> spec = (pRoot, pCriteriaQuery, pCriteriaBuilder) -> pCriteriaBuilder
                 .equal(pRoot.get("category").as(Category.class), mCategoryDao.findById(categoryId).get());
-        // >>>>>>>>>>>> updated
+        // >>>>>>>>>>>> terrencewei updated
 
         // <<<<<<<<<<<< origin
         //        Pageable pageable = null;
@@ -142,7 +150,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
                 Sort.unsorted() :
                 Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
-        // >>>>>>>>>>>> updated
+        // >>>>>>>>>>>> terrencewei updated
         Page<Product> pageResult = mProductDao.findAll(spec, pageable);
         addPriceAndInventory(pageResult.getContent());
         System.out.println("COST_TIME:" + (System.currentTimeMillis() - startTime));
@@ -187,25 +195,31 @@ public class ProductService {
             pProduct.setPrice(getProductPrice(pProduct.getId()));
             pProduct.setStock(getProductInventory(pProduct.getId()));
         });
-        // >>>>>>>>>>>> updated
+        // >>>>>>>>>>>> terrencewei updated
     }
 
 
 
     public double getProductPrice(String pProductId) {
-        Double price = (Double) ((Map) restTemplate
-                .getForObject("http://172.17.118.200:8081/api/price/" + pProductId, Map.class)).get("price");
-        return price;
-        //        return mFeignPricingService.findPrice(pProductId).getPrice();
+        // <<<<<<<<<<<< origin
+        //        Double price = (Double) ((Map) restTemplate
+        //                .getForObject("http://172.17.118.200:8081/api/price/" + pProductId, Map.class)).get("price");
+        //        return price;
+        // ============
+        return mFeignPricingService.findPrice(pProductId).getPrice();
+        // >>>>>>>>>>>> terrencewei updated
     }
 
 
 
     public int getProductInventory(String pProductId) {
-        Integer stock = (Integer) ((Map) restTemplate
-                .getForObject("http://172.17.118.200:8082//api/inventory/" + pProductId, Map.class)).get("stock");
-        return stock;
-        //        return mFeignInventoryService.findInventory(pProductId).getStock();
+        // <<<<<<<<<<<< origin
+        //        Integer stock = (Integer) ((Map) restTemplate
+        //                .getForObject("http://172.17.118.200:8082//api/inventory/" + pProductId, Map.class)).get("stock");
+        //        return stock;
+        // ============
+        return mFeignInventoryService.findInventory(pProductId).getStock();
+        // >>>>>>>>>>>> terrencewei updated
     }
 
 

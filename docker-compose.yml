@@ -62,7 +62,7 @@ services:
   web-storefront:
     mem_limit: 1280M
     image: springcloudstudy_web-storefront
-    entrypoint: java -jar /app.jar
+    entrypoint: java -jar /app.war
     ports:
      - "9000:9000"
     environment:

@@ -1,8 +1,7 @@
 package com.aaxis.microservice.training.demo1.controller;
 
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
-import com.aaxis.microservice.training.demo1.service.CategoryService;
-import com.aaxis.microservice.training.demo1.service.ProductService;
+import com.aaxis.microservice.training.demo1.service.FeignCatalogService;
 import com.aaxis.microservice.training.demo1.util.SpringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,18 +15,29 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/category")
 public class CategoryController {
 
+    // <<<<<<<<<<<< origin
+    //    @Autowired
+    //    private CategoryService mCategoryService;
+    //
+    //    @Autowired
+    //    private ProductService mProductService;
+    // ============
     @Autowired
-    private CategoryService mCategoryService;
+    private FeignCatalogService mFeignCatalogService;
 
-    @Autowired
-    private ProductService mProductService;
+    // >>>>>>>>>>>> terrencewei updated
 
 
 
     @GetMapping("/initData")
     public String initData() {
-        mCategoryService.initData();
-        mProductService.initData();
+        // <<<<<<<<<<<< origin
+        //        mCategoryService.initData();
+        //        mProductService.initData();
+        // ============
+        mFeignCatalogService.categoryInitData();
+        mFeignCatalogService.productInitData();
+        // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }
 

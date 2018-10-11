@@ -22,7 +22,7 @@ DOCKER_IP=${DOCKER_IP:-0.0.0.0}
 sh stopAll.sh
 
 # Build the project and docker images
-gradle clean bootJar;
+gradle clean bootJar bootWar;
 
 # Build new docker images
 buildDockerImage springcloudstudy_discovery-service discovery-service

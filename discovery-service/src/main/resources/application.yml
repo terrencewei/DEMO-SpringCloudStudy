@@ -13,9 +13,9 @@ spring:
     show-sql: true
 server:
   port: 7000
-#eureka:
-#  instance:
-#    prefer-ip-address: true
-#    hostname: localhost
-#  server:
-#    enable-self-preservation: true
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+  server:
+    enable-self-preservation: true

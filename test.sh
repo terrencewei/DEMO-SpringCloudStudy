@@ -2,7 +2,7 @@
 set -e
 # config
 export EUREKA_SERVER_IP=172.17.118.200
-export EUREKA_SERVER_PORT=8081
+export EUREKA_SERVER_PORT=7000
 
 buildDockerImage()
 {
@@ -22,9 +22,12 @@ DOCKER_IP=${DOCKER_IP:-0.0.0.0}
 sh stopAll.sh
 
 # Build the project and docker images
-gradle clean bootJar;
+gradle clean bootJar bootWar;
 
 # Build new docker images
+buildDockerImage springcloudstudy_catalog-service catalog-service
 buildDockerImage springcloudstudy_web-storefront web-storefront
 sleep 2
+# Start the discovery service next and wait
+docker-compose up -d catalog-service
 docker-compose up -d web-storefront

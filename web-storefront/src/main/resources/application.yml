@@ -26,9 +26,14 @@ logging:
                         sql: trace
 server:
   port: 9000
-#ribbon:
-#  eager-load:
-#    enabled: true
-#    clients:
-#      - catalog-service
-      
+eureka:
+  client:
+    service-url:
+      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+  instance:
+      prefer-ip-address: true
+ribbon:
+  eager-load:
+    enabled: true
+    clients:
+      - catalog-service

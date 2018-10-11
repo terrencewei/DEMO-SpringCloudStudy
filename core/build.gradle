@@ -1,6 +1,7 @@
 dependencies {
     compile libs.springcloud
     compile libs.data
+    compile libs.log
 }
 
 jar {

@@ -1,18 +1,28 @@
+apply plugin: 'war'
+
 dependencies {
     compile project(":core")
-    compile project(":catalog-service")
+    // compile project(":catalog-service")
     compile libs.web
     compile libs.jsp
     runtime "org.apache.tomcat.embed:tomcat-embed-jasper"
     testCompile libs.test
 }
 
-jar {
+war {
     enabled = true
 }
 
-bootJar {
+bootWar {
     baseName = 'app'
     version = '0.1'
     enabled = true
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    enabled = false
 }
