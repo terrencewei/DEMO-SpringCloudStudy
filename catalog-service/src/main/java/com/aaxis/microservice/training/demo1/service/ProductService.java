@@ -5,6 +5,7 @@ import com.aaxis.microservice.training.demo1.dao.ProductDao;
 import com.aaxis.microservice.training.demo1.domain.Category;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -16,8 +17,6 @@ import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -108,6 +107,7 @@ public class ProductService {
 
     public Page<Product> findProductsInPLP(String categoryId, int page, String sortName, String sortValue) {
         long startTime = System.currentTimeMillis();
+        // <<<<<<<<<<<< origin
         //        Specification<Product> spec = new Specification<Product>() {
         //            @Nullable
         //            @Override
@@ -118,26 +118,34 @@ public class ProductService {
         //                return p;
         //            }
         //        };
-        Specification<Product> spec = (pRoot, pCriteriaQuery, pCriteriaBuilder) -> {
-            Path<Category> name = pRoot.get("category");
-            Predicate p = pCriteriaBuilder.equal(name.as(Category.class), mCategoryDao.findById(categoryId).get());
-            return p;
-        };
+        // ============
+        Specification<Product> spec = (pRoot, pCriteriaQuery, pCriteriaBuilder) -> pCriteriaBuilder
+                .equal(pRoot.get("category").as(Category.class), mCategoryDao.findById(categoryId).get());
+        // >>>>>>>>>>>> updated
 
-        Pageable pageable = null;
-
-        if (sortName != null) {
-            Sort sort = new Sort("ASC".equalsIgnoreCase(sortValue) ? QSort.Direction.ASC : QSort.Direction.DESC,
-                    sortName);
-            pageable = new PageRequest(page - 1, 20, sort);
-        } else {
-            pageable = new PageRequest(page - 1, 20);
-        }
-
+        // <<<<<<<<<<<< origin
+        //        Pageable pageable = null;
+        //
+        //        if (sortName != null) {
+        //            Sort sort = new Sort("ASC".equalsIgnoreCase(sortValue) ? QSort.Direction.ASC : QSort.Direction.DESC, sortName);
+        //            pageable = new PageRequest(page-1, 20, sort);
+        //        } else {
+        //            pageable = new PageRequest(page-1, 20);
+        //        }
+        //
+        //        Page<Product> pageResult = mProductDao.findAll(spec, pageable);
+        //        addPriceAndInventory(pageResult.getContent());
+        //        long cost = System.currentTimeMillis()-startTime;
+        //        System.out.println("COST_TIME:"+cost);
+        //        return pageResult;
+        // ============
+        Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
+                Sort.unsorted() :
+                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
+        // >>>>>>>>>>>> updated
         Page<Product> pageResult = mProductDao.findAll(spec, pageable);
         addPriceAndInventory(pageResult.getContent());
-        long cost = System.currentTimeMillis() - startTime;
-        System.out.println("COST_TIME:" + cost);
+        System.out.println("COST_TIME:" + (System.currentTimeMillis() - startTime));
         return pageResult;
     }
 
@@ -146,17 +154,40 @@ public class ProductService {
     public Page<Product> searchProducts(int page, String productId, String name, String sortName, String sortValue) {
 
         // implemente this method.
+        Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
+                Sort.unsorted() :
+                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
 
-        return null;
+        Page<Product> result = null;
+        if (StringUtils.isNotBlank(productId) && StringUtils.isNotBlank(name)) {
+            result = mProductDao.findByIdContainingAndNameContaining(productId, name, pageable);
+        } else if (StringUtils.isNotBlank(productId)) {
+            result = mProductDao.findByIdContaining(productId, pageable);
+        } else if (StringUtils.isNotBlank(name)) {
+            result = mProductDao.findByNameContaining(name, pageable);
+        } else {
+            result = mProductDao.findAll(pageable);
+        }
+        return result;
     }
 
 
 
     public void addPriceAndInventory(List<Product> products) {
-        for (Product product : products) {
-            product.setPrice(getProductPrice(product.getId()));
-            product.setStock(getProductInventory(product.getId()));
+        // <<<<<<<<<<<< origin
+        //        for (Product product : products) {
+        //            product.setPrice(getProductPrice(product.getId()));
+        //            product.setStock(getProductInventory(product.getId()));
+        //        }
+        // ============
+        if (products == null) {
+            return;
         }
+        products.forEach(pProduct -> {
+            pProduct.setPrice(getProductPrice(pProduct.getId()));
+            pProduct.setStock(getProductInventory(pProduct.getId()));
+        });
+        // >>>>>>>>>>>> updated
     }
 
 

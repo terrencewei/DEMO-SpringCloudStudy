@@ -7,22 +7,18 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * Created by terrence on 2018/09/28.
- */
 @SpringBootApplication
-//@EnableEurekaClient
-public class Application {
+public class WebStorefrontApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(WebStorefrontApplication.class, args);
     }
 
 
 
     @Autowired
     private RestTemplateBuilder mRestTemplateBuilder;
-    
+
 
 
     @Bean
