@@ -65,7 +65,7 @@ public class ProductService {
                 String productName = RandomStringUtils.randomAlphanumeric(32);
                 if ("true".equalsIgnoreCase(checkProductExistBeforeAdding) && mProductDao.findById(productId)
                         .isPresent()) {
-                    break;
+                    continue;
                 }
                 Product product = new Product();
                 product.setId(productId);

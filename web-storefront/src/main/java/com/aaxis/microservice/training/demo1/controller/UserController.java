@@ -53,8 +53,6 @@ public class UserController {
 
     @PostMapping("/doRegist")
     public String doRegist(@ModelAttribute User user, HttpServletRequest request){
-        // validation, TODO
-
         try{
             User u = ((RestUserController) SpringUtil.getBean("restUserController")).doRegist(user);
         } catch (Exception e){
