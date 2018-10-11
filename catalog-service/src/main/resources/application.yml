@@ -13,12 +13,12 @@ spring:
     show-sql: true
 server:
   port: 8083
-eureka:
-  client:
-    service-url:
-      defaultZone: ${eurekaClientServiceUrlDefaultZone}
-  instance:
-      prefer-ip-address: true
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+#  instance:
+#      prefer-ip-address: true
 #ribbon:
 #  eager-load:
 #    enabled: true
@@ -27,5 +27,5 @@ eureka:
 #      - pricing-service
 # custom config
 categoryIds: A,B,C,D
-maxProductCountInCategory: 10
+maxProductCountInCategory: 80000
 checkProductExistBeforeAdding: true

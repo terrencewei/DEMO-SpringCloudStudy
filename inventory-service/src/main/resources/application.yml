@@ -13,10 +13,10 @@ spring:
     show-sql: true
 server:
   port: 8082
-eureka:
-  client:
-    service-url:
-      defaultZone: ${eurekaClientServiceUrlDefaultZone}
-  instance:
-      prefer-ip-address: true
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+#  instance:
+#      prefer-ip-address: true
 
