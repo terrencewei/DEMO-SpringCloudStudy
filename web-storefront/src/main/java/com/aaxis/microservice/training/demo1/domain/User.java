@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -16,8 +17,10 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long   id;
+    @NotBlank
     @Email(message = "User name should be email address")
     private String username;
+    @NotBlank
     @Length(min = 7, max = 12, message = "Password should be 7 to 12 characters")
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[\\S]+$", message = "Password should be a mix of lower and uppercase characters as well as numbers")
     private String password;

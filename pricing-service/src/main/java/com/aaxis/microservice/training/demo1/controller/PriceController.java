@@ -19,7 +19,7 @@ public class PriceController {
     /**
      * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(PriceController.class);
 
     @Autowired
     private ItemPriceService mItemPriceService;
@@ -36,6 +36,7 @@ public class PriceController {
 
     @GetMapping("/{productId}")
     public ItemPrice findPrice(@PathVariable("productId") String productId) {
+        logger.debug("findPrice() for product: {}", productId);
         return mItemPriceService.findItemPriceById(productId);
     }
 }

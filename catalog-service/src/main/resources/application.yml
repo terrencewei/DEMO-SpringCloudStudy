@@ -13,6 +13,14 @@ spring:
     show-sql: true
 server:
   port: 8083
+logging:
+    level:
+        org:
+            hibernate:
+                SQL: debug
+                type:
+                    descriptor:
+                        sql: trace
 eureka:
   client:
     service-url:
@@ -27,5 +35,5 @@ ribbon:
       - pricing-service
 # custom config
 categoryIds: A,B,C,D
-maxProductCountInCategory: 80000
+maxProductCountInCategory: 800000
 checkProductExistBeforeAdding: true

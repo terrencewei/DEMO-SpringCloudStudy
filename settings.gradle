@@ -1,4 +1,4 @@
-rootProject.name = 'springcloudstudy'
+rootProject.name = 'springcloudstudy-simple-app'
 
 include 'core'
 include 'discovery-service'
