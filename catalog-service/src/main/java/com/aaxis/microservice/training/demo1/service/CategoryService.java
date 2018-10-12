@@ -2,6 +2,7 @@ package com.aaxis.microservice.training.demo1.service;
 
 import com.aaxis.microservice.training.demo1.dao.CategoryDao;
 import com.aaxis.microservice.training.demo1.domain.Category;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CategoryService {
 
     /**

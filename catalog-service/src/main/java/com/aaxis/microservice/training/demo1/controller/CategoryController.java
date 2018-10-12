@@ -2,6 +2,7 @@ package com.aaxis.microservice.training.demo1.controller;
 
 import com.aaxis.microservice.training.demo1.domain.Category;
 import com.aaxis.microservice.training.demo1.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
+@Slf4j
 public class CategoryController {
 
     /**

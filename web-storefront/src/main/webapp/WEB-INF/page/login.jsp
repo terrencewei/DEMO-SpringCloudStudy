@@ -10,14 +10,14 @@
 <a href="/regist">Regist</a> &nbsp;
 ${errorMessage}
 <br/>
-    <form action="/doLogin" name="login">
+    <form action="/login" name="login" method="post">
         Login:
         <br/>
         username: <input type="text" name="username">
         <br/>
         password: <input type="password" name="password">
         <br>
-        <input type="submit" name="submit"/>
+        <input type="submit" name="submit" value="submit"/>
     </form>
 </body>
 </html>

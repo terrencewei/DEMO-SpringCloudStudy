@@ -26,6 +26,7 @@ ext {
             ],
             web: [
                     "org.springframework.boot:spring-boot-starter-web",
+                    "org.springframework.boot:spring-boot-starter-security",
                     "org.apache.commons:commons-lang3"
             ],
             data: [
@@ -39,7 +40,8 @@ ext {
                     "org.springframework.boot:spring-boot-starter-tomcat"
             ],
             test       : [
-                    "org.springframework.boot:spring-boot-starter-test"
+                    "org.springframework.boot:spring-boot-starter-test",
+                    "org.springframework.security:spring-security-test"
             ]
     ]
 }

@@ -12,10 +12,10 @@ spring:
         ddl-auto: update
     show-sql: true
   # support jsp view
-  mvc:
-    view:
-      prefix: /WEB-INF/page/
-      suffix: .jsp
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/page/
+#      suffix: .jsp
 logging:
     level:
         org:

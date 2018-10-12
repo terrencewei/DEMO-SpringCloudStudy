@@ -34,8 +34,12 @@ public class RestUserController {
 
     @RequestMapping("/doLogin")
     public User login(@ModelAttribute User pUser) {
-        User user = mUserService.findUserByUserName(pUser);
+        logger.info("doLogin:{}", pUser.getUsername());
+        User user = mUserService.findUserByUserName(pUser.getUsername());
         if (user == null || !user.getPassword().equals(pUser.getPassword())) {
+            if (user != null) {
+                logger.info("request user pass:{}, found user pass:{}", pUser.getPassword(), user.getPassword());
+            }
             return null;
         }
         return user;

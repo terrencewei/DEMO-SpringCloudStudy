@@ -186,6 +186,7 @@ public class ProductService {
                 Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
 
         Page<Product> result = null;
+        // TODO: combine queries into one
         if (StringUtils.isNotBlank(productId) && StringUtils.isNotBlank(name)) {
             result = mProductDao.findByIdContainingAndNameContaining(productId, name, pageable);
         } else if (StringUtils.isNotBlank(productId)) {
