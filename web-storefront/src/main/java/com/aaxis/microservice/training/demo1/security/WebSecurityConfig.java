@@ -1,5 +1,6 @@
 package com.aaxis.microservice.training.demo1.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +16,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private CustomAuthSuccessHandler mCustomAuthSuccessHandler;
+
+    @Autowired
+    private CustomAuthFailureHandler mCustomAuthFailureHandler;
+
+    @Autowired
+    private CustomLogoutSuccessHandler mCustomLogoutSuccessHandler;
+
+
 
     @Bean
     public UserDetailsService getUserDetailsService() {
@@ -38,15 +50,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // request
                 .authorizeRequests()
                 // auth white list
+                .antMatchers("/login**").permitAll()//
                 .antMatchers("/regist").permitAll()//
                 .antMatchers("/doRegist").permitAll()//
                 // any other request are in auth black list
                 .anyRequest().authenticated()
                 // login
-                .and().formLogin().loginPage("/login").defaultSuccessUrl("/index").failureUrl("/login?failed")
-                .permitAll()
+                .and().formLogin().loginPage("/login")
+                //                .defaultSuccessUrl("/index")
+                .successHandler(mCustomAuthSuccessHandler)
+                // .failureUrl("/login?failed")
+                .failureHandler(mCustomAuthFailureHandler).permitAll()
                 // logout
-                .and().logout().permitAll()
+                .and().logout().logoutSuccessHandler(mCustomLogoutSuccessHandler).permitAll()
                 //                // auth access to api calls
                 //                .and().authorizeRequests().antMatchers("/api/**").authenticated()
                 //                // auth type: basic

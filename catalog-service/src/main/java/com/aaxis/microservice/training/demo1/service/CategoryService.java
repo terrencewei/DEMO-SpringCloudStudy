@@ -14,11 +14,10 @@ import java.util.List;
 @Service
 @Slf4j
 public class CategoryService {
-
     /**
      * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
      */
-    private final Logger logger = LoggerFactory.getLogger(CategoryService.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private CategoryDao mCategoryDao;

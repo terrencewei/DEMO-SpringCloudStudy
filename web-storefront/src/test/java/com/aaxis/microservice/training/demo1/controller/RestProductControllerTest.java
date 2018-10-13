@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestProductController.class)
-@Slf4j
 public class RestProductControllerTest {
 
     @Autowired

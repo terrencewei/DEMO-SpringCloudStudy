@@ -19,7 +19,7 @@ public class InventoryController {
     /**
      * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
      */
-    private final Logger logger = LoggerFactory.getLogger(InventoryController.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private InventoryService mInventoryService;

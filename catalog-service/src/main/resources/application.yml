@@ -9,7 +9,7 @@ spring:
   jpa:
     database: mysql
     hibernate:
-        ddl-auto: update
+        ddl-auto: none
     show-sql: true
 server:
   port: 8083
@@ -35,5 +35,5 @@ ribbon:
       - pricing-service
 # custom config
 categoryIds: A,B,C,D
-maxProductCountInCategory: 800000
+maxProductCountInCategory: 1000000
 checkProductExistBeforeAdding: true

@@ -15,11 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-
     /**
      * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
      */
-    private final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserService mUserService;

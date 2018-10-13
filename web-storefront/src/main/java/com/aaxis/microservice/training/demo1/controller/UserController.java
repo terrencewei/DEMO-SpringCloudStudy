@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Slf4j
@@ -21,24 +19,22 @@ public class UserController {
     /**
      * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
      */
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserService pUserService;
 
-
-
-    @RequestMapping("/doLogin")
-    public String login(@ModelAttribute User pUser, HttpServletRequest request) {
-        logger.info("doLogin:{}", pUser.getUsername());
-        User user = ((RestUserController) SpringUtil.getBean("restUserController")).login(pUser);
-        if (user == null) {
-            request.setAttribute("errorMessage", "Login error");
-            return "forward:/login";
-        }
-        request.getSession().setAttribute("user", user);
-        return "redirect:/index";
-    }
+    //    @RequestMapping("/doLogin")
+    //    public String login(@ModelAttribute User pUser, HttpServletRequest request) {
+    //        logger.info("doLogin:{}", pUser.getUsername());
+    //        User user = ((RestUserController) SpringUtil.getBean("restUserController")).login(pUser);
+    //        if (user == null) {
+    //            request.setAttribute("errorMessage", "Login error");
+    //            return "forward:/login";
+    //        }
+    //        request.getSession().setAttribute("user", user);
+    //        return "redirect:/index";
+    //    }
 
     //    @RequestMapping("/logout")
     //    public String logout(HttpServletRequest request) {
@@ -73,16 +69,16 @@ public class UserController {
 
 
     @PostMapping("/doRegist")
-    public String doRegist(@ModelAttribute User user, HttpServletRequest request) {
+    public String doRegist(@ModelAttribute User user, RedirectAttributes pRedirectAttributes) {
         logger.info("doRegist:{}", user.getUsername());
         try {
             User u = ((RestUserController) SpringUtil.getBean("restUserController")).doRegist(user);
+            pRedirectAttributes.addFlashAttribute("user", u);
         } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("errorMessage", e.getMessage());
-            return "forward:/regist";
+            pRedirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/regist";
         }
-        request.getSession().setAttribute("user", user);
+        // TODO: do Login aand set user to session attr "user"
         return "redirect:/index";
     }
 }

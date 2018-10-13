@@ -25,9 +25,8 @@ sh stopAll.sh
 gradle clean bootJar bootWar;
 
 # Build new docker images
+buildDockerImage springcloudstudy_discovery-service discovery-service
 buildDockerImage springcloudstudy_catalog-service catalog-service
-buildDockerImage springcloudstudy_web-storefront web-storefront
 sleep 2
 # Start the discovery service next and wait
 docker-compose up -d catalog-service
-docker-compose up -d web-storefront

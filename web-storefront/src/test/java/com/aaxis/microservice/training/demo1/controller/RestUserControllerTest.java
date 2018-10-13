@@ -3,7 +3,6 @@ package com.aaxis.microservice.training.demo1.controller;
 import com.aaxis.microservice.training.demo1.domain.User;
 import com.aaxis.microservice.training.demo1.service.UserService;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestUserController.class)
-@Slf4j
 public class RestUserControllerTest {
 
     @Autowired
