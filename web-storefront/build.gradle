@@ -5,7 +5,6 @@ dependencies {
     // compile project(":catalog-service")
     compile libs.web
     compile libs.jsp
-    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.51'
     runtime "org.apache.tomcat.embed:tomcat-embed-jasper"
     testCompile libs.test
 }

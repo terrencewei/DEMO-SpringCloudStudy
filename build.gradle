@@ -32,6 +32,8 @@ ext {
             data: [
                     "org.springframework.data:spring-data-commons",
                     "org.springframework.boot:spring-boot-starter-data-jpa",
+                    "org.springframework.boot:spring-boot-starter-data-redis",
+                    "redis.clients:jedis",
                     "mysql:mysql-connector-java"
             ],
             jsp: [

@@ -3,8 +3,6 @@ package com.aaxis.microservice.training.demo1.controller;
 import com.aaxis.microservice.training.demo1.domain.Category;
 import com.aaxis.microservice.training.demo1.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +15,6 @@ import java.util.List;
 @Slf4j
 public class CategoryController {
 
-    /**
-     * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
-     */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private CategoryService mCategoryService;
 
@@ -29,7 +22,7 @@ public class CategoryController {
 
     @GetMapping("/initData")
     public void initData() {
-        logger.info("initData");
+        log.info("initData");
         mCategoryService.initData();
     }
 
@@ -37,7 +30,7 @@ public class CategoryController {
 
     @GetMapping("/findAllCategories")
     public List<Category> findAllCategories() {
-        logger.info("findAllCategories");
+        log.info("findAllCategories");
         return mCategoryService.findAllCategories();
     }
 

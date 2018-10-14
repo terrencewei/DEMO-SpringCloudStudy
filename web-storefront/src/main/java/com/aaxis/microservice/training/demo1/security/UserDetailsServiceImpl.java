@@ -3,8 +3,6 @@ package com.aaxis.microservice.training.demo1.security;
 import com.aaxis.microservice.training.demo1.domain.User;
 import com.aaxis.microservice.training.demo1.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,10 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-    /**
-     * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
-     */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserService mUserService;
@@ -27,13 +21,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("loadUserByUsername:{}", username);
+        log.info("loadUserByUsername:{}", username);
         UserDetailsImpl userDetails = new UserDetailsImpl();
         User u = new User();
         u.setUsername(username);
         User user = mUserService.findUserByUserName(username);
         if (user == null) {
-            logger.info("UsernameNotFoundException:{}", username);
+            log.info("UsernameNotFoundException:{}", username);
             throw new UsernameNotFoundException(username);
         }
         userDetails.setName(user.getUsername());

@@ -4,10 +4,9 @@ import com.aaxis.microservice.training.demo1.dao.CategoryDao;
 import com.aaxis.microservice.training.demo1.dao.ProductDao;
 import com.aaxis.microservice.training.demo1.domain.Category;
 import com.aaxis.microservice.training.demo1.domain.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
@@ -25,12 +24,8 @@ import java.util.List;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class ProductService {
-
-    /**
-     * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
-     */
-    private final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     @Autowired
     private CategoryDao mCategoryDao;
@@ -58,26 +53,26 @@ public class ProductService {
 
 
     public void initData() {
-        logger.info("initData");
+        log.info("initData");
         List<Category> categories = mCategoryDao.findAll();
 
         if (categories == null) {
-            logger.error("initData() categories is null");
+            log.error("initData() categories is null");
             return;
         }
         int maxProductCountInCategory = Integer.parseInt(env.getProperty("maxProductCountInCategory"));
-        logger.trace("initData() maxProductCountInCategory:{}", maxProductCountInCategory);
+        log.trace("initData() maxProductCountInCategory:{}", maxProductCountInCategory);
 
         String checkProductExistBeforeAdding = env.getProperty("checkProductExistBeforeAdding");
-        logger.trace("initData() checkProductExistBeforeAdding:{}", checkProductExistBeforeAdding);
+        log.trace("initData() checkProductExistBeforeAdding:{}", checkProductExistBeforeAdding);
 
         for (Category category : categories) {
 
             int randomProductSize = new Random().nextInt(maxProductCountInCategory / 2) + maxProductCountInCategory / 2;
-            logger.debug("initData() randomProductSize:{}", randomProductSize);
+            log.debug("initData() randomProductSize:{}", randomProductSize);
             // select substr(id,3) from product where id like 'D_%' order by convert(substr(id,3),SIGNED) desc limit 1
             int maxProduct = mProductDao.getMaxProductId(category.getId() + "_%");
-            logger.debug("initData() maxProduct:{}", maxProduct);
+            log.debug("initData() maxProduct:{}", maxProduct);
 
             List<Product> productList = new ArrayList<>(PRODUCT_BATCH_SIZE);
             if (maxProduct < randomProductSize) {
@@ -86,10 +81,10 @@ public class ProductService {
                     String productName = RandomStringUtils.randomAlphanumeric(32);
                     if ("true".equalsIgnoreCase(checkProductExistBeforeAdding) && mProductDao.findById(productId)
                             .isPresent()) {
-                        logger.info("initData() Ignore this product:{}", productId);
+                        log.info("initData() Ignore this product:{}", productId);
                         continue;
                     }
-                    logger.info("initData() Create this product:{}, max is:{}", productId, randomProductSize);
+                    log.info("initData() Create this product:{}, max is:{}", productId, randomProductSize);
                     Product product = new Product();
                     product.setId(productId);
                     product.setName(productName);

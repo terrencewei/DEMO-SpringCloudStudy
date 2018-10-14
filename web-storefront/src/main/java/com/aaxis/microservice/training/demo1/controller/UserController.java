@@ -4,8 +4,6 @@ import com.aaxis.microservice.training.demo1.domain.User;
 import com.aaxis.microservice.training.demo1.service.UserService;
 import com.aaxis.microservice.training.demo1.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,17 +14,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 public class UserController {
 
-    /**
-     * If IDE enable lombok plugin, will directly use static 'log' method, this 'logger' will be unnecessary
-     */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private UserService pUserService;
 
     //    @RequestMapping("/doLogin")
     //    public String login(@ModelAttribute User pUser, HttpServletRequest request) {
-    //        logger.info("doLogin:{}", pUser.getUsername());
+    //        log.info("doLogin:{}", pUser.getUsername());
     //        User user = ((RestUserController) SpringUtil.getBean("restUserController")).login(pUser);
     //        if (user == null) {
     //            request.setAttribute("errorMessage", "Login error");
@@ -46,7 +39,7 @@ public class UserController {
 
     //    @RequestMapping("/index")
     //    public String index() {
-    //        logger.info("index");
+    //        log.info("index");
     //        return "index";
     //    }
     //
@@ -54,7 +47,7 @@ public class UserController {
     //
     //    @RequestMapping("/login")
     //    public String login() {
-    //        logger.info("login");
+    //        log.info("login");
     //        return "login";
     //    }
     //
@@ -62,7 +55,7 @@ public class UserController {
     //
     //    @RequestMapping("/regist")
     //    public String regist() {
-    //        logger.info("regist");
+    //        log.info("regist");
     //        return "regist";
     //    }
 
@@ -70,7 +63,7 @@ public class UserController {
 
     @PostMapping("/doRegist")
     public String doRegist(@ModelAttribute User user, RedirectAttributes pRedirectAttributes) {
-        logger.info("doRegist:{}", user.getUsername());
+        log.info("doRegist:{}", user.getUsername());
         try {
             User u = ((RestUserController) SpringUtil.getBean("restUserController")).doRegist(user);
             pRedirectAttributes.addFlashAttribute("user", u);
