@@ -3,7 +3,7 @@ package com.aaxis.microservice.training.demo1.controller;
 import com.aaxis.microservice.training.demo1.domain.RestPageImpl;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
-import com.aaxis.microservice.training.demo1.service.FeignCatalogService;
+import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +22,7 @@ public class RestCategoryController {
     //    private ProductService      mProductService;
     // ============
     @Autowired
-    private FeignCatalogService mFeignCatalogService;
+    private CatalogFeignClient mCatalogFeignClient;
     // >>>>>>>>>>>> terrencewei updated
 
 
@@ -32,7 +32,7 @@ public class RestCategoryController {
         // <<<<<<<<<<<< origin
         //        mCategoryService.initData();
         // ============
-        mFeignCatalogService.categoryInitData();
+        mCatalogFeignClient.categoryInitData();
         // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }
@@ -48,7 +48,7 @@ public class RestCategoryController {
         //        Page<Product> pageProducts = mProductService
         //                .findProductsInPLP(categoryId, Integer.parseInt(page), sortName, sortValue);
         // ============
-        RestPageImpl<Product> pageProducts = mFeignCatalogService
+        RestPageImpl<Product> pageProducts = mCatalogFeignClient
                 .findProductsInPLP(categoryId, Integer.parseInt(page), sortName, sortValue);
         // >>>>>>>>>>>> terrencewei updated
         ProductResult productResult = new ProductResult();

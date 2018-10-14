@@ -1,9 +1,8 @@
 package com.aaxis.microservice.training.demo1.controller;
 
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
-import com.aaxis.microservice.training.demo1.service.FeignCatalogService;
+import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class RestProductControllerTest {
     private MockMvc mvc;
 
     @MockBean// TODO: using Spring Clound Contract to test this service, not using Mock 
-    private FeignCatalogService mFeignCatalogService;
+    private CatalogFeignClient mCatalogFeignClient;
 
 
 

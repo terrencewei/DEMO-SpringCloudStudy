@@ -38,10 +38,10 @@ public class ProductService {
     //    private RestTemplate          restTemplate;
     // ============
     @Autowired
-    private FeignInventoryService mFeignInventoryService;
+    private InventoryFeignClient mInventoryFeignClient;
 
     @Autowired
-    private FeignPricingService mFeignPricingService;
+    private PricingFeignClient mPricingFeignClient;
 
     // >>>>>>>>>>>> terrencewei updated
 
@@ -114,8 +114,8 @@ public class ProductService {
         //        restTemplate.getForObject("http://172.17.118.200:8081/api/price/initData", Map.class);
         //        restTemplate.getForObject("http://172.17.118.200:8082/api/inventory/initData", Map.class);
         // ============
-        mFeignPricingService.initData();
-        mFeignInventoryService.initData();
+        mPricingFeignClient.initData();
+        mInventoryFeignClient.initData();
         // >>>>>>>>>>>> terrencewei updated
     }
 
@@ -163,12 +163,12 @@ public class ProductService {
         // ============
         Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
                 Sort.unsorted() :
-                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
-        // >>>>>>>>>>>> terrencewei updated
+                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).next();
         Page<Product> pageResult = mProductDao.findAll(spec, pageable);
         addPriceAndInventory(pageResult.getContent());
-        System.out.println("COST_TIME:" + (System.currentTimeMillis() - startTime));
+        log.info("COST_TIME:{}", System.currentTimeMillis() - startTime);
         return pageResult;
+        // >>>>>>>>>>>> terrencewei updated
     }
 
 
@@ -178,19 +178,11 @@ public class ProductService {
         // implemente this method.
         Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
                 Sort.unsorted() :
-                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).first();
+                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).next();
 
         Page<Product> result = null;
-        // TODO: combine queries into one
-        if (StringUtils.isNotBlank(productId) && StringUtils.isNotBlank(name)) {
-            result = mProductDao.findByIdContainingAndNameContaining(productId, name, pageable);
-        } else if (StringUtils.isNotBlank(productId)) {
-            result = mProductDao.findByIdContaining(productId, pageable);
-        } else if (StringUtils.isNotBlank(name)) {
-            result = mProductDao.findByNameContaining(name, pageable);
-        } else {
-            result = mProductDao.findAll(pageable);
-        }
+        result = mProductDao.findByIdContainingAndNameContaining(StringUtils.isNotBlank(productId) ? productId : "",
+                StringUtils.isNotBlank(name) ? name : "", pageable);
         return result;
     }
 
@@ -221,7 +213,7 @@ public class ProductService {
         //                .getForObject("http://172.17.118.200:8081/api/price/" + pProductId, Map.class)).get("price");
         //        return price;
         // ============
-        return mFeignPricingService.findPrice(pProductId).getPrice();
+        return mPricingFeignClient.findPrice(pProductId).getPrice();
         // >>>>>>>>>>>> terrencewei updated
     }
 
@@ -233,7 +225,7 @@ public class ProductService {
         //                .getForObject("http://172.17.118.200:8082//api/inventory/" + pProductId, Map.class)).get("stock");
         //        return stock;
         // ============
-        return mFeignInventoryService.findInventory(pProductId).getStock();
+        return mInventoryFeignClient.findInventory(pProductId).getStock();
         // >>>>>>>>>>>> terrencewei updated
     }
 

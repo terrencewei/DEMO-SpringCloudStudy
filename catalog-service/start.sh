@@ -1,4 +1,2 @@
 #!/usr/bin/env bash
-export EUREKA_SERVER_IP=172.17.118.200
-export EUREKA_SERVER_PORT=7000
-gradle clean bootRun
+SPRING_APPLICATION_JSON='{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://172.17.118.200:7000/eureka"}}}}' gradle clean bootRun

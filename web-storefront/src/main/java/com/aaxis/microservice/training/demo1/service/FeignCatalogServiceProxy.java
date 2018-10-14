@@ -15,11 +15,11 @@ import java.util.List;
 public class FeignCatalogServiceProxy {
 
     @Autowired
-    private FeignCatalogService mFeignCatalogService;
+    private CatalogFeignClient mCatalogFeignClient;
 
 
 
     public List<Category> findAllCategories() {
-        return mFeignCatalogService.findAllCategories();
+        return mCatalogFeignClient.findAllCategories();
     }
 }

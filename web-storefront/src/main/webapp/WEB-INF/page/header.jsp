@@ -30,7 +30,7 @@ Username: ${user.username} <br/>
         request.setAttribute("allCategories", proxy.findAllCategories());
     }
     // >>>>>>>>>>>> terrencewei updated
-    System.out.println(request.getAttribute("allCategories"));
+    System.out.println("header.jsp:"+request.getAttribute("allCategories"));
 %>
 
 Category:<br/>

@@ -2,7 +2,7 @@ package com.aaxis.microservice.training.demo1.controller;
 
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
-import com.aaxis.microservice.training.demo1.service.FeignCatalogService;
+import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class RestProductController {
     //    private ProductService mProductService;
     // ============
     @Autowired
-    private FeignCatalogService mFeignCatalogService;
+    private CatalogFeignClient mCatalogFeignClient;
     // >>>>>>>>>>>> terrencewei updated
 
 
@@ -33,7 +33,7 @@ public class RestProductController {
         // <<<<<<<<<<<< origin
         //        Page<Product> pageProducts = mProductService.searchProducts(page, productId, name, sortName, sortValue);
         // ============
-        Page<Product> pageProducts = mFeignCatalogService.searchProducts(page, productId, name, sortName, sortValue);
+        Page<Product> pageProducts = mCatalogFeignClient.searchProducts(page, productId, name, sortName, sortValue);
         // >>>>>>>>>>>> terrencewei updated
         ProductResult productResult = new ProductResult();
         productResult.setPageProducts(pageProducts);

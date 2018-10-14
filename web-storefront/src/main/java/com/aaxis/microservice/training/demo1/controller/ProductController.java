@@ -1,7 +1,7 @@
 package com.aaxis.microservice.training.demo1.controller;
 
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
-import com.aaxis.microservice.training.demo1.service.FeignCatalogService;
+import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
 import com.aaxis.microservice.training.demo1.util.SpringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ public class ProductController {
     //    private ProductService mProductService;
     // ============
     @Autowired
-    private FeignCatalogService mFeignCatalogService;
+    private CatalogFeignClient mCatalogFeignClient;
     // >>>>>>>>>>>> terrencewei updated
 
 
@@ -29,7 +29,7 @@ public class ProductController {
         // <<<<<<<<<<<< origin
         //        mProductService.initData();
         // ============
-        mFeignCatalogService.productInitData();
+        mCatalogFeignClient.productInitData();
         // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }

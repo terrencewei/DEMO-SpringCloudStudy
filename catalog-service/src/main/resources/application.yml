@@ -24,10 +24,22 @@ logging:
 eureka:
   client:
     service-url:
-      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+      defaultZone: http://172.17.118.200:7000/eureka
   instance:
       prefer-ip-address: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 2000
+feign:
+  hystrix:
+     enabled: true
 ribbon:
+  ReadTimeout: 2000
+  ConnectTimeout: 2000
   eager-load:
     enabled: true
     clients:
