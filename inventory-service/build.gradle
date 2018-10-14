@@ -3,6 +3,11 @@ dependencies {
     testCompile libs.test
 }
 
+apply plugin: 'spring-cloud-contract'
+
+group 'test.local'
+version '0.1'
+
 jar {
     enabled = true
 }
@@ -11,4 +16,8 @@ bootJar {
     baseName = 'app'
     version = '0.1'
     enabled = true
+}
+
+contracts {
+    baseClassForTests = 'com.aaxis.microservice.training.demo1.service.ContractVerifierBase'
 }

@@ -4,6 +4,7 @@ import com.aaxis.microservice.training.demo1.domain.User;
 import com.aaxis.microservice.training.demo1.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/rest")
+@RequestMapping(value = "/rest", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class RestUserController {
 

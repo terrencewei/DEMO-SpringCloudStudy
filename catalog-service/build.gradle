@@ -1,6 +1,7 @@
 dependencies {
     compile project(":core")
     testCompile libs.test
+    testCompile "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
 }
 
 jar {

@@ -4,13 +4,14 @@ import com.aaxis.microservice.training.demo1.domain.Inventory;
 import com.aaxis.microservice.training.demo1.service.InventoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping(value = "/api/inventory", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class InventoryController {
 

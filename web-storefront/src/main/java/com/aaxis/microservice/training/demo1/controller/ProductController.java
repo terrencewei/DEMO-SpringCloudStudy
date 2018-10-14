@@ -4,6 +4,7 @@ import com.aaxis.microservice.training.demo1.domain.ProductResult;
 import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
 import com.aaxis.microservice.training.demo1.util.SpringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/product")
+@RequestMapping(value = "/product", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProductController {
 
     // <<<<<<<<<<<< origin

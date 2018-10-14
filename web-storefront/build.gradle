@@ -2,11 +2,11 @@ apply plugin: 'war'
 
 dependencies {
     compile project(":core")
-    // compile project(":catalog-service")
     compile libs.web
     compile libs.jsp
     runtime "org.apache.tomcat.embed:tomcat-embed-jasper"
     testCompile libs.test
+    testCompile "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
 }
 
 war {
