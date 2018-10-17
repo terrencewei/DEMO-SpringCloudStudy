@@ -29,14 +29,14 @@ public interface PricingFeignClient {
             return new PricingFeignClient() {
                 @Override
                 public void initData() {
-                    log.info("Hystrix initData()");
+                    log.debug("Hystrix initData()");
                 }
 
 
 
                 @Override
                 public ItemPrice findPrice(String productId) {
-                    log.info("Hystrix findPrice() productId:{}", productId);
+                    log.debug("Hystrix findPrice() productId:{}", productId);
                     ItemPrice price = new ItemPrice();
                     price.setId(productId);
                     return price;

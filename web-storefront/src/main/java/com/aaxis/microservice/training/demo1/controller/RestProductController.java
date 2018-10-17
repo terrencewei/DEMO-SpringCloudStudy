@@ -15,13 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/rest/product", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class RestProductController {
 
-    // <<<<<<<<<<<< origin
-    //    @Autowired
-    //    private ProductService mProductService;
-    // ============
     @Autowired
     private CatalogFeignClient mCatalogFeignClient;
-    // >>>>>>>>>>>> terrencewei updated
 
 
 
@@ -31,11 +26,7 @@ public class RestProductController {
             @RequestParam(value = "sortName", required = false) String sortName,
             @RequestParam(value = "sortValue", required = false) String sortValue) {
         page = page == null ? 1 : page;
-        // <<<<<<<<<<<< origin
-        //        Page<Product> pageProducts = mProductService.searchProducts(page, productId, name, sortName, sortValue);
-        // ============
         Page<Product> pageProducts = mCatalogFeignClient.searchProducts(page, productId, name, sortName, sortValue);
-        // >>>>>>>>>>>> terrencewei updated
         ProductResult productResult = new ProductResult();
         productResult.setPageProducts(pageProducts);
         productResult.getRequest().put("productId", productId);

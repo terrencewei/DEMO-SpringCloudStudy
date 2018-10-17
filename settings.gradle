@@ -1,6 +1,6 @@
 rootProject.name = 'springcloudstudy-simple-app'
 
-include 'core'
+include 'common-module'
 include 'discovery-service'
 include 'inventory-service'
 include 'pricing-service'

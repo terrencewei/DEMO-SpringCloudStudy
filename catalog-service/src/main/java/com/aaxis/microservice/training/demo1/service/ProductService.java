@@ -4,6 +4,7 @@ import com.aaxis.microservice.training.demo1.dao.CategoryDao;
 import com.aaxis.microservice.training.demo1.dao.ProductDao;
 import com.aaxis.microservice.training.demo1.domain.Category;
 import com.aaxis.microservice.training.demo1.domain.Product;
+import com.aaxis.microservice.training.demo1.domain.RestPageImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,11 +18,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -33,22 +34,22 @@ public class ProductService {
     @Autowired
     private ProductDao mProductDao;
 
-    // <<<<<<<<<<<< origin
-    //    @Autowired
-    //    private RestTemplate          restTemplate;
-    // ============
     @Autowired
     private InventoryFeignClient mInventoryFeignClient;
 
     @Autowired
     private PricingFeignClient mPricingFeignClient;
 
-    // >>>>>>>>>>>> terrencewei updated
+    @PersistenceContext
+    private EntityManager mEntityManager;
 
     @Autowired
-    private Environment env;
+    private Environment mEnvironment;
 
-    private static final int PRODUCT_BATCH_SIZE = 1000;
+    private static final String ENV_MAXPRODUCTCOUNTINCATEGORY     = "maxProductCountInCategory";
+    private static final String ENV_CHECKPRODUCTEXISTBEFOREADDING = "checkProductExistBeforeAdding";
+    private static final String ENV_PRODUCTBATCHSIZE              = "productBatchSize";
+    private static final String ENV_PAGESIZE                      = "pageSize";
 
 
 
@@ -60,12 +61,14 @@ public class ProductService {
             log.error("initData() categories is null");
             return;
         }
-        int maxProductCountInCategory = Integer.parseInt(env.getProperty("maxProductCountInCategory"));
+        int maxProductCountInCategory = Integer.parseInt(mEnvironment.getProperty(ENV_MAXPRODUCTCOUNTINCATEGORY));
         log.trace("initData() maxProductCountInCategory:{}", maxProductCountInCategory);
 
-        String checkProductExistBeforeAdding = env.getProperty("checkProductExistBeforeAdding");
+        boolean checkProductExistBeforeAdding = Boolean
+                .parseBoolean(mEnvironment.getProperty(ENV_CHECKPRODUCTEXISTBEFOREADDING));
         log.trace("initData() checkProductExistBeforeAdding:{}", checkProductExistBeforeAdding);
 
+        int productBatchSize = Integer.parseInt(mEnvironment.getProperty(ENV_PRODUCTBATCHSIZE));
         for (Category category : categories) {
 
             int randomProductSize = new Random().nextInt(maxProductCountInCategory / 2) + maxProductCountInCategory / 2;
@@ -74,13 +77,12 @@ public class ProductService {
             int maxProduct = mProductDao.getMaxProductId(category.getId() + "_%");
             log.debug("initData() maxProduct:{}", maxProduct);
 
-            List<Product> productList = new ArrayList<>(PRODUCT_BATCH_SIZE);
+            List<Product> productList = new ArrayList<>(productBatchSize);
             if (maxProduct < randomProductSize) {
                 for (int i = maxProduct + 1; i <= randomProductSize; i++) {
                     String productId = category.getId() + "_" + i;
                     String productName = RandomStringUtils.randomAlphanumeric(32);
-                    if ("true".equalsIgnoreCase(checkProductExistBeforeAdding) && mProductDao.findById(productId)
-                            .isPresent()) {
+                    if (checkProductExistBeforeAdding && mProductDao.findById(productId).isPresent()) {
                         log.info("initData() Ignore this product:{}", productId);
                         continue;
                     }
@@ -97,7 +99,7 @@ public class ProductService {
                     //                mProductDao.save(product);
                     productList.add(product);
 
-                    if (productList.size() % PRODUCT_BATCH_SIZE == 0) {
+                    if (productList.size() % productBatchSize == 0) {
                         mProductDao.saveAll(productList);
                         productList.clear();
                     }
@@ -110,13 +112,8 @@ public class ProductService {
             }
         }
 
-        // <<<<<<<<<<<< origin
-        //        restTemplate.getForObject("http://172.17.118.200:8081/api/price/initData", Map.class);
-        //        restTemplate.getForObject("http://172.17.118.200:8082/api/inventory/initData", Map.class);
-        // ============
         mPricingFeignClient.initData();
         mInventoryFeignClient.initData();
-        // >>>>>>>>>>>> terrencewei updated
     }
 
 
@@ -129,46 +126,117 @@ public class ProductService {
 
     public Page<Product> findProductsInPLP(String categoryId, int page, String sortName, String sortValue) {
         long startTime = System.currentTimeMillis();
-        // <<<<<<<<<<<< origin
-        //        Specification<Product> spec = new Specification<Product>() {
-        //            @Nullable
-        //            @Override
-        //            public Predicate toPredicate(Root<Product> pRoot, CriteriaQuery<?> pCriteriaQuery,
-        //                    CriteriaBuilder pCriteriaBuilder) {
-        //                Path<Category> name = pRoot.get("category");
-        //                Predicate p = pCriteriaBuilder.equal(name.as(Category.class), mCategoryDao.findById(categoryId).get());
-        //                return p;
-        //            }
-        //        };
-        // ============
+        int pageSize = Integer.parseInt(mEnvironment.getProperty(ENV_PAGESIZE));
+        // using native query
+        Sort sort = null;
+        List<Product> result = null;
+        int total = mProductDao.findProductsInPLPCount(categoryId);
+        int offset = (page - 1) * pageSize;
+        if (sortName == null) {
+            sort = Sort.unsorted();
+            result = mProductDao.findProductsInPLP(categoryId, offset, pageSize);
+        } else {
+            if (!"ASC".equalsIgnoreCase(sortValue)) {
+                sortValue = "DESC";
+            }
+            sort = Sort.by(QSort.Direction.valueOf(sortValue.toUpperCase()), sortName);
+            // if offset is more than half, query by reverse order
+            int sqlPageSize = pageSize;
+            boolean reverse = offset > (total / 2);
+            if (reverse) {
+                int reverseOffset = total - offset;
+                offset = reverseOffset > pageSize ? reverseOffset - pageSize : 0;
+                if (reverseOffset < 0) {
+                    // pageNo is more than last pageNo
+                    sqlPageSize = 0;
+                } else if (reverseOffset < pageSize) {
+                    // pageNo is the last page and page content size is less than one page size
+                    sqlPageSize = reverseOffset;
+                }
+                sortValue = "ASC".equalsIgnoreCase(sortValue) ? "DESC" : "ASC";
+            }
+            result = queryProductByRawSQL(categoryId, sortName, sortValue, offset, sqlPageSize);
+            if (reverse) {
+                Collections.reverse(result);
+            }
+        }
+        Page<Product> pageResult = new RestPageImpl(result, page - 2 < 0 ?
+                PageRequest.of(0, pageSize, sort).first() :
+                PageRequest.of(page - 2, pageSize, sort).next(), total);
+        addPriceAndInventory(pageResult.getContent());
+        log.info("new    COST_TIME:{}", System.currentTimeMillis() - startTime);
+        return pageResult;
+    }
+
+
+
+    /**
+     * when sort name is not null, need dynamic add 'order by xxx' to raw SQL, so using mEntityManager to create native
+     * query instead of using @Query by SpringDataJPA
+     *
+     * @param categoryId
+     * @param sortName
+     * @param sortType
+     * @param offSet
+     * @param pageSize
+     * @return
+     */
+    public List<Product> queryProductByRawSQL(String categoryId, String sortName, String sortType, int offSet,
+            int pageSize) {
+        if (sortName.equalsIgnoreCase("createdDate")) {
+            sortName = "created_date";
+        }
+        List<Product> products = new ArrayList<>();
+        String queryStr = "SELECT p.id,created_date,name,priority FROM product p "
+                + "INNER JOIN ( SELECT id FROM product USE INDEX (`PRIMARY`) WHERE category_id = ?1 ORDER BY "
+                + sortName + " " + sortType + " LIMIT ?2,?3 ) t ON t.id = p.id";
+        try {
+            Query query = mEntityManager.createNativeQuery(queryStr);
+            query.setParameter(1, categoryId);
+            query.setParameter(2, offSet);
+            query.setParameter(3, pageSize);
+            Iterator itr = query.getResultList().iterator();
+            query.getResultList().forEach(pO -> products.add(createProduct((Object[]) pO)));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return products;
+    }
+
+
+
+    private Product createProduct(Object[] columns) {
+        Product product = new Product();
+        product.setId((String) columns[0]);
+        product.setCreatedDate((Date) columns[1]);
+        product.setName((String) columns[2]);
+        product.setPriority((Integer) (columns[3]));
+        return product;
+    }
+
+
+
+    /**
+     * find products by spring data pagination
+     *
+     * @param categoryId
+     * @param page
+     * @param sortName
+     * @param sortValue
+     * @return
+     */
+    public Page<Product> findProductsInPLP_legacy(String categoryId, int page, String sortName, String sortValue) {
+        long startTime = System.currentTimeMillis();
+        int pageSize = Integer.parseInt(mEnvironment.getProperty(ENV_PAGESIZE));
         Specification<Product> spec = (pRoot, pCriteriaQuery, pCriteriaBuilder) -> pCriteriaBuilder
                 .equal(pRoot.get("category").as(Category.class), mCategoryDao.findById(categoryId).get());
-        // >>>>>>>>>>>> terrencewei updated
-
-        // <<<<<<<<<<<< origin
-        //        Pageable pageable = null;
-        //
-        //        if (sortName != null) {
-        //            Sort sort = new Sort("ASC".equalsIgnoreCase(sortValue) ? QSort.Direction.ASC : QSort.Direction.DESC, sortName);
-        //            pageable = new PageRequest(page-1, 20, sort);
-        //        } else {
-        //            pageable = new PageRequest(page-1, 20);
-        //        }
-        //
-        //        Page<Product> pageResult = mProductDao.findAll(spec, pageable);
-        //        addPriceAndInventory(pageResult.getContent());
-        //        long cost = System.currentTimeMillis()-startTime;
-        //        System.out.println("COST_TIME:"+cost);
-        //        return pageResult;
-        // ============
-        Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sortName == null ?
                 Sort.unsorted() :
                 Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).next();
         Page<Product> pageResult = mProductDao.findAll(spec, pageable);
         addPriceAndInventory(pageResult.getContent());
-        log.info("COST_TIME:{}", System.currentTimeMillis() - startTime);
+        log.info("Legacy COST_TIME:{}", System.currentTimeMillis() - startTime);
         return pageResult;
-        // >>>>>>>>>>>> terrencewei updated
     }
 
 
@@ -176,7 +244,8 @@ public class ProductService {
     public Page<Product> searchProducts(int page, String productId, String name, String sortName, String sortValue) {
 
         // implemente this method.
-        Pageable pageable = PageRequest.of(page - 1, 20, sortName == null ?
+        int pageSize = Integer.parseInt(mEnvironment.getProperty(ENV_PAGESIZE));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sortName == null ?
                 Sort.unsorted() :
                 Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).next();
 
@@ -189,12 +258,6 @@ public class ProductService {
 
 
     public void addPriceAndInventory(List<Product> products) {
-        // <<<<<<<<<<<< origin
-        //        for (Product product : products) {
-        //            product.setPrice(getProductPrice(product.getId()));
-        //            product.setStock(getProductInventory(product.getId()));
-        //        }
-        // ============
         if (products == null) {
             return;
         }
@@ -202,31 +265,18 @@ public class ProductService {
             pProduct.setPrice(getProductPrice(pProduct.getId()));
             pProduct.setStock(getProductInventory(pProduct.getId()));
         });
-        // >>>>>>>>>>>> terrencewei updated
     }
 
 
 
     public double getProductPrice(String pProductId) {
-        // <<<<<<<<<<<< origin
-        //        Double price = (Double) ((Map) restTemplate
-        //                .getForObject("http://172.17.118.200:8081/api/price/" + pProductId, Map.class)).get("price");
-        //        return price;
-        // ============
         return mPricingFeignClient.findPrice(pProductId).getPrice();
-        // >>>>>>>>>>>> terrencewei updated
     }
 
 
 
     public int getProductInventory(String pProductId) {
-        // <<<<<<<<<<<< origin
-        //        Integer stock = (Integer) ((Map) restTemplate
-        //                .getForObject("http://172.17.118.200:8082//api/inventory/" + pProductId, Map.class)).get("stock");
-        //        return stock;
-        // ============
         return mInventoryFeignClient.findInventory(pProductId).getStock();
-        // >>>>>>>>>>>> terrencewei updated
     }
 
 

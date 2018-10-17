@@ -1,5 +1,5 @@
 #version: '3'
-# to use memory limit feature in docker-compose, should downgrade version to '2'
+# to use memory limit feature in docker-compose, downgrade version to '2'
 version: '2'
 services:
   mysql:
@@ -9,71 +9,67 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 123abcABC
   redis:
-      image: redis
-      ports:
-        - "6379:6379"
+    image: redis
+    ports:
+      - "6379:6379"
   discovery-service:
-    mem_limit: 1280M
+    mem_limit: 2048M
     image: springcloudstudy_discovery-service
     entrypoint: java -jar /app.jar
     ports:
-     - "7000:7000"
-    environment:
-     - server.port=$EUREKA_SERVER_PORT
+     - "7001:7001"
     restart: always
+    extra_hosts:
+     mylocal: $MYLOCAL_IP
   pricing-service:
-    mem_limit: 1280M
+    mem_limit: 2048M
     image: springcloudstudy_pricing-service
     entrypoint: java -jar /app.jar
     ports:
      - "8081:8081"
-    environment:
-     - server.port=8081
-     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
     depends_on:
      - discovery-service
     restart: always
+    extra_hosts:
+     localhost: $MYLOCAL_IP
   inventory-service:
-    mem_limit: 1280M
+    mem_limit: 2048M
     image: springcloudstudy_inventory-service
     entrypoint: java -jar /app.jar
     ports:
      - "8082:8082"
-    environment:
-     - server.port=8082
-     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
     depends_on:
      - discovery-service
     restart: always
+    extra_hosts:
+     localhost: $MYLOCAL_IP
   catalog-service:
-    mem_limit: 1280M
+    mem_limit: 2048M
     image: springcloudstudy_catalog-service
     entrypoint: java -jar /app.jar
     ports:
      - "8083:8083"
-    environment:
-     - server.port=8083
-     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
     links:
      - discovery-service
     depends_on:
      - discovery-service
     restart: always
+    extra_hosts:
+     localhost: $MYLOCAL_IP
   web-storefront:
-    mem_limit: 1280M
+    mem_limit: 2048M
     image: springcloudstudy_web-storefront
-    entrypoint: java -jar /app.war
+    entrypoint: java -jar /app.war # notice: storefront should be .war to include jsp pages, not .jar
     ports:
-     - "9000:9000"
-    environment:
-     - server.port=9000
-     - eurekaClientServiceUrlDefaultZone=http://$EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/eureka
+     - "8080:8080"
     links:
      - discovery-service
     depends_on:
      - discovery-service
     restart: always
+    extra_hosts:
+     localhost: $MYLOCAL_IP

@@ -16,29 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CategoryController {
 
-    // <<<<<<<<<<<< origin
-    //    @Autowired
-    //    private CategoryService mCategoryService;
-    //
-    //    @Autowired
-    //    private ProductService mProductService;
-    // ============
     @Autowired
     private CatalogFeignClient mCatalogFeignClient;
-
-    // >>>>>>>>>>>> terrencewei updated
 
 
 
     @GetMapping("/initData")
     public String initData() {
-        // <<<<<<<<<<<< origin
-        //        mCategoryService.initData();
-        //        mProductService.initData();
-        // ============
         mCatalogFeignClient.categoryInitData();
         mCatalogFeignClient.productInitData();
-        // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }
 

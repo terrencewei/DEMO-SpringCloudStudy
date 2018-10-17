@@ -15,23 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = "/product", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ProductController {
 
-    // <<<<<<<<<<<< origin
-    //    @Autowired
-    //    private ProductService mProductService;
-    // ============
     @Autowired
     private CatalogFeignClient mCatalogFeignClient;
-    // >>>>>>>>>>>> terrencewei updated
 
 
 
     @GetMapping("/initData")
     public String initData() {
-        // <<<<<<<<<<<< origin
-        //        mProductService.initData();
-        // ============
         mCatalogFeignClient.productInitData();
-        // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }
 

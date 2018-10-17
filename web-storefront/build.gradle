@@ -1,7 +1,7 @@
 apply plugin: 'war'
 
 dependencies {
-    compile project(":core")
+    compile project(":common-module")
     compile libs.web
     compile libs.jsp
     runtime "org.apache.tomcat.embed:tomcat-embed-jasper"

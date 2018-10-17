@@ -29,14 +29,14 @@ public interface InventoryFeignClient {
             return new InventoryFeignClient() {
                 @Override
                 public void initData() {
-                    log.info("Hystrix initData()");
+                    log.debug("Hystrix initData()");
                 }
 
 
 
                 @Override
                 public Inventory findInventory(String productId) {
-                    log.info("Hystrix findInventory() productId:{}", productId);
+                    log.debug("Hystrix findInventory() productId:{}", productId);
                     Inventory inventory = new Inventory();
                     inventory.setId(productId);
                     return inventory;

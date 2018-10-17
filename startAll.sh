@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
 # config
-export EUREKA_SERVER_IP=172.17.118.200
-export EUREKA_SERVER_PORT=7000
+export MYLOCAL_IP=172.17.118.200
 
 buildDockerImage()
 {
@@ -36,7 +35,7 @@ docker-compose up -d discovery-service
 
 while [ -z ${DISCOVERY_SERVICE_READY} ]; do
   echo "Waiting for discovery service..."
-  if [ "$(curl --silent $EUREKA_SERVER_IP:$EUREKA_SERVER_PORT/actuator/health 2>&1 | grep -q '\"status\":\"UP\"'; echo $?)" = 0 ]; then
+  if [ "$(curl --silent $MYLOCAL_IP:7001/actuator/health 2>&1 | grep -q '\"status\":\"UP\"'; echo $?)" = 0 ]; then
       DISCOVERY_SERVICE_READY=true;
   fi
   sleep 2

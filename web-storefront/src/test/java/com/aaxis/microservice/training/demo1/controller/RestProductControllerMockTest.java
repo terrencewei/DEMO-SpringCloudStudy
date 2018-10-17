@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,17 +26,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestProductController.class)
+@Rollback
 public class RestProductControllerMockTest {
 
     @Autowired
     private MockMvc mvc;
 
-    @MockBean// TODO: using Spring Clound Contract to test this service, not using Mock 
+    @MockBean// stub test simple please refer to com.aaxis.microservice.training.demo1.service.ProductControllerTest 
     private CatalogFeignClient mCatalogFeignClient;
 
 
 
     @Test
+    @WithMockUser
     public void productSearch() throws Exception {
         String productIdK = "productId";
         String nameK = "name";

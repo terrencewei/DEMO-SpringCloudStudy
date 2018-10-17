@@ -31,7 +31,7 @@ public class CategoryController {
 
     @GetMapping("/findAllCategories")
     public List<Category> findAllCategories() {
-        log.info("findAllCategories");
+        log.debug("findAllCategories");
         return mCategoryService.findAllCategories();
     }
 

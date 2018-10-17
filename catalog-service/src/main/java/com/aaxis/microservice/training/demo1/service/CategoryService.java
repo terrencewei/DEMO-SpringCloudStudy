@@ -43,7 +43,7 @@ public class CategoryService {
 
 
     public List<Category> findAllCategories() {
-        log.info("findAllCategories");
+        log.debug("findAllCategories");
         return mCategoryDao.findAll();
     }
 }

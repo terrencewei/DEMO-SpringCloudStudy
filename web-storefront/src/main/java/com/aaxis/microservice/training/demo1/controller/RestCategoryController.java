@@ -15,26 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/rest/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class RestCategoryController {
 
-    // <<<<<<<<<<<< origin
-    //    @Autowired
-    //    private CategoryService mCategoryService;
-    //
-    //    @Autowired
-    //    private ProductService      mProductService;
-    // ============
     @Autowired
     private CatalogFeignClient mCatalogFeignClient;
-    // >>>>>>>>>>>> terrencewei updated
 
 
 
     @GetMapping("/initData")
     public String initData() {
-        // <<<<<<<<<<<< origin
-        //        mCategoryService.initData();
-        // ============
         mCatalogFeignClient.categoryInitData();
-        // >>>>>>>>>>>> terrencewei updated
         return "redirect:/login";
     }
 
@@ -45,13 +33,8 @@ public class RestCategoryController {
             @PathVariable(name = "page", required = false) String page,
             @PathVariable(name = "sortName", required = false) String sortName,
             @PathVariable(name = "sortValue", required = false) String sortValue) {
-        // <<<<<<<<<<<< origin
-        //        Page<Product> pageProducts = mProductService
-        //                .findProductsInPLP(categoryId, Integer.parseInt(page), sortName, sortValue);
-        // ============
         RestPageImpl<Product> pageProducts = mCatalogFeignClient
                 .findProductsInPLP(categoryId, Integer.parseInt(page), sortName, sortValue);
-        // >>>>>>>>>>>> terrencewei updated
         ProductResult productResult = new ProductResult();
         productResult.setPageProducts(pageProducts);
         productResult.getRequest().put("requestCategoryId", categoryId);

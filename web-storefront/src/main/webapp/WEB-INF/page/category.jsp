@@ -21,16 +21,23 @@
     </tr>
     </thead>
     <tbody>
-    <c:forEach var="product" items="${productResult.pageProducts.content}">
-        <tr>
-            <td>${product.id}</td>
-            <td>${product.name}</td>
-            <td>${product.price}</td>
-            <td>${product.stock}</td>
-            <td>${product.priority}</td>
-            <td>${product.createdDate}</td>
-        </tr>
-    </c:forEach>
+    <c:choose>
+        <c:when test="${empty productResult.pageProducts.content}">
+            Service is unavailable.
+        </c:when>
+        <c:otherwise>
+            <c:forEach var="product" items="${productResult.pageProducts.content}">
+                <tr>
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.stock}</td>
+                    <td>${product.priority}</td>
+                    <td>${product.createdDate}</td>
+                </tr>
+            </c:forEach>
+        </c:otherwise>
+    </c:choose>
     </tbody>
     <tfoot>
     <tr>

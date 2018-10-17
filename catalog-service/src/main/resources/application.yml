@@ -3,30 +3,37 @@ spring:
     name: catalog-service
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.17.118.200:3306/test?&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://mylocal:3306/test?&useUnicode=true&characterEncoding=utf8
     username: root
     password: 123abcABC
   jpa:
     database: mysql
     hibernate:
-        ddl-auto: none
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
+  cloud:
+    config:
+      enabled: false
+  redis:
+    host: mylocal
 server:
   port: 8083
 logging:
     level:
         org:
             hibernate:
-                SQL: debug
+                SQL: info
                 type:
                     descriptor:
-                        sql: trace
+                        sql: info
 eureka:
   client:
     service-url:
-      defaultZone: http://172.17.118.200:7000/eureka
+      defaultZone: http://mylocal:7001/eureka
   instance:
       prefer-ip-address: true
+      # "spring.cloud.client.ipAddress" has changed to "spring.cloud.client.ip-address" since SpringCloud.Finchley
+      instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
 hystrix:
   command:
     default:
@@ -49,3 +56,5 @@ ribbon:
 categoryIds: A,B,C,D
 maxProductCountInCategory: 1000000
 checkProductExistBeforeAdding: true
+pageSize: 20
+productBatchSize : 1000

@@ -39,6 +39,17 @@ public class ProductController {
 
 
 
+    @GetMapping("/findProductsInPLP_legacy")
+    public Page<Product> findProductsInPLP_legacy(@RequestParam String categoryId,
+            @RequestParam(required = false) int page, @RequestParam(required = false) String sortName,
+            @RequestParam(required = false) String sortValue) {
+        log.debug("findProductsInPLP_legacy() categoryId:{}, page:{}, sortName:{}, sortValue:{}", categoryId, page,
+                sortName, sortValue);
+        return mProductService.findProductsInPLP_legacy(categoryId, page, sortName, sortValue);
+    }
+
+
+
     @GetMapping("/searchProducts")
     public Page<Product> searchProducts(@RequestParam(required = false) int page,
             @RequestParam(required = false) String productId, @RequestParam(required = false) String name,

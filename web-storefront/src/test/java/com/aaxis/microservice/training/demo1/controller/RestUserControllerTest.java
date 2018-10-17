@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,11 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by terrence on 2018/10/11.
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = RestUserController.class)
+@WebMvcTest(controllers = RestUserController.class, secure = false)
+@Rollback
 public class RestUserControllerTest {
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mMockMvc;
 
     @MockBean
     private UserService mUserService;
@@ -41,8 +43,8 @@ public class RestUserControllerTest {
     public void login() throws Exception {
         String name = "test1@example.com";
         String pass = "123abcABC";
-        String responseString = mvc.perform(get("/rest/doLogin").flashAttr("user", getUser(name, pass))).andDo(print())
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        String responseString = mMockMvc.perform(get("/rest/doLogin").flashAttr("user", getUser(name, pass)))
+                .andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         assertThat(responseString).isBlank();
     }
 
@@ -52,7 +54,7 @@ public class RestUserControllerTest {
     public void doRegist() throws Exception {
         String name = "test1@example.com";
         String pass = "123abcABC";
-        String responseString = mvc.perform(post("/rest/doRegist").flashAttr("user", getUser(name, pass)))
+        String responseString = mMockMvc.perform(post("/rest/doRegist").flashAttr("user", getUser(name, pass)))
                 .andDo(print()).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         assertThat(responseString).isNotBlank();
         User response = JSONObject.parseObject(responseString, User.class);

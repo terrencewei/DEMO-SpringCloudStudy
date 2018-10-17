@@ -3,7 +3,7 @@ spring:
     name: inventory-service
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.17.118.200:3306/test?&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://mylocal:3306/test?&useUnicode=true&characterEncoding=utf8
     username: root
     password: 123abcABC
   jpa:
@@ -11,12 +11,19 @@ spring:
     hibernate:
         ddl-auto: none
     show-sql: true
+  cloud:
+    config:
+      enabled: false
+  redis:
+    host: mylocal
 server:
   port: 8082
 eureka:
   client:
     service-url:
-      defaultZone: ${eurekaClientServiceUrlDefaultZone}
+      defaultZone: http://mylocal:7001/eureka
   instance:
       prefer-ip-address: true
+      # "spring.cloud.client.ipAddress" has changed to "spring.cloud.client.ip-address" since SpringCloud.Finchley
+      instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
 

@@ -3,7 +3,7 @@ spring:
     name: web-storefront
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.17.118.200:3306/test?&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://mylocal:3306/test?&useUnicode=true&characterEncoding=utf8
     username: root
     password: 123abcABC
   jpa:
@@ -12,26 +12,43 @@ spring:
         ddl-auto: none
     show-sql: true
   # support jsp view
+  # these config set in com.aaxis.microservice.training.demo1.security.WebMvcConfig
 #  mvc:
 #    view:
 #      prefix: /WEB-INF/page/
 #      suffix: .jsp
+  cloud:
+    config:
+      enabled: false
+  redis:
+    host: mylocal
 logging:
     level:
         org:
             hibernate:
-                SQL: debug
+                SQL: info
                 type:
                     descriptor:
-                        sql: trace
+                        sql: info
+            springframework:
+                security: info
+        com:
+          aaxis:
+            microservice:
+              training:
+                demo1:
+                  controller: info
 server:
-  port: 9000
+  port: 8080
 eureka:
   client:
     service-url:
-      defaultZone: http://172.17.118.200:7000/eureka
+      defaultZone: http://mylocal:7001/eureka
+    registry-fetch-interval-seconds: 5
   instance:
       prefer-ip-address: true
+      # "spring.cloud.client.ipAddress" has changed to "spring.cloud.client.ip-address" since SpringCloud.Finchley
+      instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
 hystrix:
   command:
     default:
