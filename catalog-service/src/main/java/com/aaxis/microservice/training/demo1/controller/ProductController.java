@@ -1,5 +1,6 @@
 package com.aaxis.microservice.training.demo1.controller;
 
+import com.aaxis.microservice.training.demo1.domain.ESProduct;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -54,9 +55,20 @@ public class ProductController {
     public Page<Product> searchProducts(@RequestParam(required = false) int page,
             @RequestParam(required = false) String productId, @RequestParam(required = false) String name,
             @RequestParam(required = false) String sortName, @RequestParam(required = false) String sortValue) {
-        log.debug("findProductsInPLP() page:{}, productId:{}, name:{}, sortName:{}, sortValue:{}", page, productId,
-                name, sortName, sortValue);
+        log.debug("searchProducts() page:{}, productId:{}, name:{}, sortName:{}, sortValue:{}", page, productId, name,
+                sortName, sortValue);
         return mProductService.searchProducts(page, productId, name, sortName, sortValue);
+    }
+
+
+
+    @GetMapping("/searchProducts_es")
+    public Page<ESProduct> searchProducts_es(@RequestParam(required = false) int page,
+            @RequestParam(required = false) String productId, @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sortName, @RequestParam(required = false) String sortValue) {
+        log.debug("searchProducts_es() page:{}, productId:{}, name:{}, sortName:{}, sortValue:{}", page, productId,
+                name, sortName, sortValue);
+        return mProductService.searchProducts_es(page, productId, name, sortName, sortValue);
     }
 
 }

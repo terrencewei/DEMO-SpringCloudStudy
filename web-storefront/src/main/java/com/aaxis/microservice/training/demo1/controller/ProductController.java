@@ -35,6 +35,13 @@ public class ProductController {
 
 
 
+    @GetMapping("/searchPage_es")
+    public String loadsSearchPage_es() {
+        return "/search_page_es";
+    }
+
+
+
     @GetMapping("/search")
     public String search(HttpServletRequest request) {
         String productId = request.getParameter("productId");
@@ -47,4 +54,20 @@ public class ProductController {
         request.setAttribute("productResult", productResult);
         return "/search";
     }
+
+
+
+    @GetMapping("/search_es")
+    public String search_es(HttpServletRequest request) {
+        String productId = request.getParameter("productId");
+        String name = request.getParameter("name");
+        int page = request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"));
+        String sortName = request.getParameter("sortName");
+        String sortValue = request.getParameter("sortValue");
+        ProductResult productResult = ((RestProductController) SpringUtil.getBean("restProductController"))
+                .search_es(productId, name, page, sortName, sortValue);
+        request.setAttribute("productResult", productResult);
+        return "/search_es";
+    }
+
 }

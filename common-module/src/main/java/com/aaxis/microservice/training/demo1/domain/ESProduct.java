@@ -1,26 +1,26 @@
 package com.aaxis.microservice.training.demo1.domain;
 
-import javax.persistence.*;
+import org.springframework.data.elasticsearch.annotations.Document;
+
+import javax.persistence.Id;
 import java.util.Date;
 
-@Entity
-public class Product {
+/**
+ * Created by terrence on 2018/10/17.
+ *
+ * @see com.aaxis.microservice.training.demo1.domain.Product
+ */
+@Document(indexName = "product", type = "default", shards = 1, replicas = 0)
+public class ESProduct {
 
     @Id
-    @Column(length = 40)
     private String  id;
     private String  name;
     private Integer priority;
     private Date    createdDate;
-
-    @Transient
-    private double price;
-    @Transient
-    private int    stock;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private double  price;
+    private int     stock;
+    private String  category_id;
 
 
 
@@ -96,13 +96,13 @@ public class Product {
 
 
 
-    public Category getCategory() {
-        return category;
+    public String getCategory_id() {
+        return category_id;
     }
 
 
 
-    public void setCategory(Category pCategory) {
-        category = pCategory;
+    public void setCategory_id(String pCategory_id) {
+        category_id = pCategory_id;
     }
 }

@@ -6,22 +6,31 @@ import javax.persistence.Id;
 
 @Entity
 public class Inventory {
+
     @Id
     @Column(length = 40)
     private String id;
-    private int stock;
+    private int    stock;
+
+
 
     public String getId() {
         return id;
     }
 
+
+
     public void setId(String pId) {
         id = pId;
     }
 
+
+
     public int getStock() {
         return stock;
     }
+
+
 
     public void setStock(int pStock) {
         stock = pStock;

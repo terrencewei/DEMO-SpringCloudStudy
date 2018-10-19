@@ -1,8 +1,10 @@
 package com.aaxis.microservice.training.demo1.service;
 
 import com.aaxis.microservice.training.demo1.dao.CategoryDao;
+import com.aaxis.microservice.training.demo1.dao.ESProductDao;
 import com.aaxis.microservice.training.demo1.dao.ProductDao;
 import com.aaxis.microservice.training.demo1.domain.Category;
+import com.aaxis.microservice.training.demo1.domain.ESProduct;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.domain.RestPageImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,9 @@ public class ProductService {
 
     @Autowired
     private Environment mEnvironment;
+
+    @Autowired
+    private ESProductDao mESProductDao;
 
     private static final String ENV_MAXPRODUCTCOUNTINCATEGORY     = "maxProductCountInCategory";
     private static final String ENV_CHECKPRODUCTEXISTBEFOREADDING = "checkProductExistBeforeAdding";
@@ -118,12 +123,27 @@ public class ProductService {
 
 
 
+    public List<Product> findAll() {
+        return mProductDao.findAll();
+    }
+
+
+
     public List<Product> findProductsByCategoryId(String categoryId) {
         return mProductDao.findProductsByCategoryId(categoryId);
     }
 
 
 
+    /**
+     * find products by high-performance SQL
+     *
+     * @param categoryId
+     * @param page
+     * @param sortName
+     * @param sortValue
+     * @return
+     */
     public Page<Product> findProductsInPLP(String categoryId, int page, String sortName, String sortValue) {
         long startTime = System.currentTimeMillis();
         int pageSize = Integer.parseInt(mEnvironment.getProperty(ENV_PAGESIZE));
@@ -217,7 +237,7 @@ public class ProductService {
 
 
     /**
-     * find products by spring data pagination
+     * find products by spring data JPA
      *
      * @param categoryId
      * @param page
@@ -241,6 +261,28 @@ public class ProductService {
 
 
 
+    public List<Product> findProductsWithRange(long offset, long size) {
+        return mProductDao.findProductsWithLimit(offset, size);
+    }
+
+
+
+    public long getProductsCount() {
+        return mProductDao.count();
+    }
+
+
+
+    /**
+     * search product by Spring Data JPA
+     *
+     * @param page
+     * @param productId
+     * @param name
+     * @param sortName
+     * @param sortValue
+     * @return
+     */
     public Page<Product> searchProducts(int page, String productId, String name, String sortName, String sortValue) {
 
         // implemente this method.
@@ -252,6 +294,31 @@ public class ProductService {
         Page<Product> result = null;
         result = mProductDao.findByIdContainingAndNameContaining(StringUtils.isNotBlank(productId) ? productId : "",
                 StringUtils.isNotBlank(name) ? name : "", pageable);
+        return result;
+    }
+
+
+
+    /**
+     * search products by ElasticSearch
+     *
+     * @param page
+     * @param productId
+     * @param name
+     * @param sortName
+     * @param sortValue
+     * @return
+     */
+    public Page<ESProduct> searchProducts_es(int page, String productId, String name, String sortName,
+            String sortValue) {
+        int pageSize = Integer.parseInt(mEnvironment.getProperty(ENV_PAGESIZE));
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sortName == null ?
+                Sort.unsorted() :
+                Sort.by(QSort.Direction.valueOf("ASC".equalsIgnoreCase(sortValue) ? "ASC" : "DESC"), sortName)).next();
+
+        Page<ESProduct> result = mESProductDao
+                .findByIdContainingAndNameContaining(StringUtils.isNotBlank(productId) ? productId : "",
+                        StringUtils.isNotBlank(name) ? name : "", pageable);
         return result;
     }
 

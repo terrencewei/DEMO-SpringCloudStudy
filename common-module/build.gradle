@@ -3,6 +3,7 @@ dependencies {
     compile libs.data
     compile libs.log
     compile group: 'com.alibaba', name: 'fastjson', version: '1.2.51'
+    compile group: 'org.springframework.data', name: 'spring-data-elasticsearch', version: '3.1.1.RELEASE'
 }
 
 jar {

@@ -14,7 +14,8 @@ Username: ${user.username} <br/>
 <a href="/logout">Logout</a> &nbsp;
 <a href="/regist">Regist</a> &nbsp;
 <a href="/login">SignIn</a> &nbsp;
-<a href="/product/searchPage">Product Search</a> <br/>
+<a href="/product/searchPage">Product Search (SpringDataJPA)</a> <br/>
+<a href="/product/searchPage_es">Product Search (ElasticSearch)</a> <br/>
 <%
     FeignCatalogServiceProxy proxy = (FeignCatalogServiceProxy) SpringUtil.getBean("feignCatalogServiceProxy");
     if (proxy == null) {

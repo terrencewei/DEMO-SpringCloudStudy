@@ -27,4 +27,8 @@ public interface ProductDao extends JpaRepository<Product, String>, JpaSpecifica
 
     @Query(value = "SELECT count(1) FROM product WHERE category_id = :categoryId", nativeQuery = true)
     int findProductsInPLPCount(@Param("categoryId") String categoryId);
+
+    @Query(value = "SELECT * FROM product limit :offset, :size", nativeQuery = true)
+    List<Product> findProductsWithLimit(@Param("offset") long offset, @Param("size") long size);
+
 }

@@ -1,6 +1,7 @@
 package com.aaxis.microservice.training.demo1.service;
 
 import com.aaxis.microservice.training.demo1.domain.Category;
+import com.aaxis.microservice.training.demo1.domain.ESProduct;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.domain.RestPageImpl;
 import feign.hystrix.FallbackFactory;
@@ -34,6 +35,11 @@ public interface CatalogFeignClient {
 
     @GetMapping(path = "/api/product/searchProducts")
     RestPageImpl<Product> searchProducts(@RequestParam(required = false) int page,
+            @RequestParam(required = false) String productId, @RequestParam(required = false) String name,
+            @RequestParam(required = false) String sortName, @RequestParam(required = false) String sortValue);
+
+    @GetMapping(path = "/api/product/searchProducts_es")
+    RestPageImpl<ESProduct> searchProducts_es(@RequestParam(required = false) int page,
             @RequestParam(required = false) String productId, @RequestParam(required = false) String name,
             @RequestParam(required = false) String sortName, @RequestParam(required = false) String sortValue);
 
@@ -82,6 +88,16 @@ public interface CatalogFeignClient {
                     log.info("Hystrix searchProducts()");
                     return new RestPageImpl<Product>();
                 }
+
+
+
+                @Override
+                public RestPageImpl<ESProduct> searchProducts_es(int page, String productId, String name,
+                        String sortName, String sortValue) {
+                    log.info("Hystrix searchProducts_es()");
+                    return new RestPageImpl<ESProduct>();
+                }
+
             };
         }
     }

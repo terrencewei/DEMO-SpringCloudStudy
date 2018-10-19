@@ -11,6 +11,9 @@ spring:
     hibernate:
         ddl-auto: none
     show-sql: true
+  cloud:
+    config:
+      enabled: false
   redis:
     database: 0
     host: mylocal
@@ -22,9 +25,16 @@ spring:
       max-wait:
       min-idle:
       timeout: 0
-  cloud:
-    config:
-      enabled: false
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      cluster-nodes: mylocal:9300
+      cluster-name: docker-cluster # MAKE SURE this name is right, you can get from mylocal:9200
+      properties:
+        transport:
+          tcp:
+            connect_timeout: 10s
 server:
   port: 8081
 eureka:

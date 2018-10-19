@@ -22,6 +22,16 @@ spring:
       enabled: false
   redis:
     host: mylocal
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      cluster-nodes: mylocal:9300
+      cluster-name: docker-cluster # MAKE SURE this name is right, you can get from mylocal:9200
+      properties:
+        transport:
+          tcp:
+            connect_timeout: 10s
 logging:
     level:
         org:

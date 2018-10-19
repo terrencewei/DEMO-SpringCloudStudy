@@ -1,5 +1,7 @@
 package com.aaxis.microservice.training.demo1.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,7 +17,8 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    private Set<Product> mProducts;
+    @JsonIgnore
+    private Set<Product> products;
 
 
 
@@ -39,5 +42,17 @@ public class Category {
 
     public void setName(String pName) {
         name = pName;
+    }
+
+
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+
+
+    public void setProducts(Set<Product> pProducts) {
+        products = pProducts;
     }
 }

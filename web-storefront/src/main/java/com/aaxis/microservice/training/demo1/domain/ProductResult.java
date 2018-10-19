@@ -6,33 +6,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductResult {
-    private Page<Product> mPageProducts;
 
+    private Page<Product>   pageProducts;
+    private Page<ESProduct> pageProducts_es;
     private Map<String, Object> request = new HashMap<String, Object>();
-
     private String requestCategoryId;
 
+
+
     public Page<Product> getPageProducts() {
-        return mPageProducts;
+        return pageProducts;
     }
+
+
 
     public void setPageProducts(Page<Product> pPageProducts) {
-        mPageProducts = pPageProducts;
+        pageProducts = pPageProducts;
     }
 
-    public String getRequestCategoryId() {
-        return requestCategoryId;
+
+
+    public Page<ESProduct> getPageProducts_es() {
+        return pageProducts_es;
     }
 
-    public void setRequestCategoryId(String pRequestCategoryId) {
-        requestCategoryId = pRequestCategoryId;
+
+
+    public void setPageProducts_es(Page<ESProduct> pPageProducts_es) {
+        pageProducts_es = pPageProducts_es;
     }
+
+
 
     public Map<String, Object> getRequest() {
         return request;
     }
 
+
+
     public void setRequest(Map<String, Object> pRequest) {
         request = pRequest;
+    }
+
+
+
+    public String getRequestCategoryId() {
+        return requestCategoryId;
+    }
+
+
+
+    public void setRequestCategoryId(String pRequestCategoryId) {
+        requestCategoryId = pRequestCategoryId;
     }
 }

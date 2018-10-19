@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,7 +25,7 @@ public class CategoryService {
     public void initData() {
         log.info("initData");
         String[] categoryIds = env.getProperty("categoryIds").split(",");
-        log.trace("initData() categoryIds:{}", categoryIds);
+        log.trace("initData() categoryIds:{}", Arrays.toString(categoryIds));
 
         for (String categoryId : categoryIds) {
             if (mCategoryDao.findById(categoryId).isPresent()) {

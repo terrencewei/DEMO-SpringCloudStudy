@@ -1,5 +1,6 @@
 package com.aaxis.microservice.training.demo1.controller;
 
+import com.aaxis.microservice.training.demo1.domain.ESProduct;
 import com.aaxis.microservice.training.demo1.domain.Product;
 import com.aaxis.microservice.training.demo1.domain.ProductResult;
 import com.aaxis.microservice.training.demo1.service.CatalogFeignClient;
@@ -36,4 +37,25 @@ public class RestProductController {
         productResult.getRequest().put("sortValue", sortValue);
         return productResult;
     }
+
+
+
+    @GetMapping("/search_es")
+    public ProductResult search_es(@RequestParam("productId") String productId, @RequestParam("name") String name,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "sortName", required = false) String sortName,
+            @RequestParam(value = "sortValue", required = false) String sortValue) {
+        page = page == null ? 1 : page;
+        Page<ESProduct> pageProducts = mCatalogFeignClient
+                .searchProducts_es(page, productId, name, sortName, sortValue);
+        ProductResult productResult = new ProductResult();
+        productResult.setPageProducts_es(pageProducts);
+        productResult.getRequest().put("productId", productId);
+        productResult.getRequest().put("name", name);
+        productResult.getRequest().put("page", page);
+        productResult.getRequest().put("sortName", sortName);
+        productResult.getRequest().put("sortValue", sortValue);
+        return productResult;
+    }
+
 }

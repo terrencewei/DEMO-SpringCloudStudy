@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 @Entity
 public class ItemPrice implements Serializable {
+    
     @Id
     @Column(length = 40)
     private String id;

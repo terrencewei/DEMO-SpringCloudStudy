@@ -2,12 +2,13 @@
 
 ## Required
 1) Need install MySql database. schema name="test", username="root", password="123abcABC"
-1) Need install Redis.
-3) This program need 7001,8080,8081,8082,8083,3306,6379 ports
-4) JDK8
-5) Gradle (version 4.7 is recommended)
+2) Need install Redis.
+3) Need install ElasticSearch (version >=6.x, 6.4.2 is recommended)
+4) This program need 7001,8080,8081,8082,8083,3306,6379,9200,9300 ports
+5) JDK8
+6) Gradle (version 4.7 is recommended)
 
-## DB installtion
+## DB installation
 ### Windows
         In windows, we suggest use free installation version Mysql. 
         1) download the both files in \\172.17.3.100\Training\Microservice\Phase1-JavaBase\Examing and unzip in your local
@@ -23,7 +24,16 @@
         2) Execute command:
             docker pull mysql
             docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123abcABC -d mysql
-## Redis installtion
+        3) If you want to restore test data from "backup.sql" file, do the following:
+        Download "backup.sql" from \\172.17.3.100\upload\TerrenceWei/
+        Execute command below:
+            docker exec -it mysql bash
+            mysql -uroot -p123abcABC
+            create database test;
+            exit;
+            exit;
+            cat backup.sql | docker exec -i mysql /usr/bin/mysql -uroot -p123abcABC test
+## Redis installation
 ### Windows
         1) Install docker for windows
         2) Execute command below in PowerShell
@@ -33,6 +43,16 @@
 ### Command
         docker pull redis
         docker run --name redis -p 6379:6379 -d redis
+## ElasticSearch installation
+### Windows
+        1) Install docker for windows
+        2) Execute command below in PowerShell
+### Linux
+        1) Install docker-ce
+        2) Execute command below in ternimal
+### Command
+        docker pull docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+        docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.4.2
 ## How to running
         First of all, need add `mylocal` with your PC ip address to your host files
         e.g. mylocal 172.17.118.200
@@ -82,6 +102,7 @@
         On Linux, run the shell script:
             sh start.sh
 ### Inital temporary data
+#### Inital MySQL data
 
         If we use above free installation version Mysql. we do not need initial data.
         if we use ourself's mysql:
@@ -91,8 +112,32 @@
                 http://127.0.0.1:8083/api/product/initData
                 http://127.0.0.1:8081/api/price/initData
                 http://127.0.0.1:8082/api/inventory/initData
-
-
+#### Inital ElasticSearch indexing data
+        1) Start catalog-service module
+        2) Open browswer and enter the url to do indexing:
+            2.1) Baseline indexing for all data:
+                http://127.0.0.1:8083/api/product/elasticsearch/baselineIndexing
+            2.2) Partial indexing:
+                http://127.0.0.1:8083/api/product/elasticsearch/partialIndexing/<offset>/<size>
+            'offset' and 'size' are mapping to SQL 'limit :offset, :size' to query data from DB.
+            e.g. Indexing first 1000 record:
+                 http://127.0.0.1:8083/api/product/elasticsearch/partialIndexing/0/1000
+                 Indexing 1001~5000 record:
+                 http://127.0.0.1:8083/api/product/elasticsearch/partialIndexing/1000/4000
+        Indexing status will output in service log like:
+                    2018-10-18 14:14:09.058  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex indexed indexBatchSize{} record
+                    2018-10-18 14:14:09.183  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex [27.61]% precent finished, remaining [1589053] record
+                    2018-10-18 14:14:09.384  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex indexed indexBatchSize{} record
+                    2018-10-18 14:14:09.516  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex [27.65]% precent finished, remaining [1588053] record
+                    2018-10-18 14:14:09.691  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex indexed indexBatchSize{} record
+                    2018-10-18 14:14:09.825  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex [27.70]% precent finished, remaining [1587053] record
+                    2018-10-18 14:14:10.008  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex indexed indexBatchSize{} record
+                    2018-10-18 14:14:10.132  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex [27.74]% precent finished, remaining [1586053] record
+                    2018-10-18 14:14:10.328  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex indexed indexBatchSize{} record
+                    2018-10-18 14:14:10.857  INFO 32534 --- [nio-8083-exec-1] c.a.m.t.demo1.service.ESIndexService     : bulkIndex [27.79]% precent finished, remainin
+        Wait until 100% percent
+        My testing result on my local PC, indexing about 3.1 million records will cost about 8 minutes.(batch size is 10000)
+        
 ### Access
         http://localhost:8080/login
 
@@ -343,7 +388,26 @@ Training report
 ### Spring Security
         TODO
 ### ElasticSearch
-        TODO
+
+        Using @ConfigurationProperties to get config from application.yml
+        Create:
+            /catalog-service/
+                com.aaxis.microservice.training.demo1.domain.ESProduct
+                com.aaxis.microservice.training.demo1.dao.ESProductDao
+                com.aaxis.microservice.training.demo1.service.ESIndexService
+                com.aaxis.microservice.training.demo1.service.ESProductIndexService
+                com.aaxis.microservice.training.demo1.controller.ESProductController
+        Create methods to use es when search product:
+            /catalog-service/
+                com.aaxis.microservice.training.demo1.service.ProductService.searchProducts_es
+
+        Improvements:
+            1) When pagination is large:
+                    QueryPhaseExecutionException[Result window is too large, from + size must be less than or equal to: [10000]
+            Solution: elasticsearch should be used to search context, not doing deep pagination in memory because elasticsearch will load all data into memory when use pagination
+            2) When order by String type of field(like 'id'):
+                java.lang.IllegalArgumentException: Fielddata is disabled on text fields by default. Set fielddata=true on [id] in order to...
+            Solution: elasticsearch should not be used to sort String type of field in memory    
 ### ELK
         TODO
 ### Other Optimization Suggestion
@@ -359,7 +423,14 @@ Training report
             5. Add new query to get max product id when initData in Product service to support initData resume from break-point 
             6. Refactor all env property name to static String
             7. Change all 'forward' action to 'redirect' to keep request stateless
-            8. Rename some class variable follow ATG project, use 'm' as prefix
+            8. (deperated)Rename some class variable follow ATG project, use 'm' as prefix
+            NOTICE: this rule is not suitable with lombok annotaions @Getter/@Setter
+            9. lombok annotations:  @Getter/@Setter/@NoArgsConstructor/@AllArgsConstructor annotaion, or using @Data can more simplify annotations above
+            Important:
+                DO NOT use @Data with @Entity together, will cause OOM by override the hashCode method by @Data when connect to mysql
+                NO NOT use lombok annotations with @Entity/rest API, may cause many problem, such as infinite-recursion when being parsed json then cause OOM
+                NO NOT use @Getter/@Setter with variables starts with 'm' as prefix
+                @Many-to-one may also cause infinite-recursion when being parsed json
         CLI building scripts:
             1. docker-compose.yml, startAll.sh, stopAll.sh, start.sh under each modules, using docker-compose
             These scripts were created by me from another project https://stash.aaxisgroup.net/projects/ATH/repos/springcloud-verification/browse
@@ -368,6 +439,7 @@ Training report
         Others:
             1. Update exist guide in this readme to support the multiple app structure
     2) My things about improvements that not implements in this practice:
+        MOST IMPORTANT OF ALL: EVERY PART in this Microservice is easy in, difficult out, Spring or other utils(like elasticsearch) is high encapsulation, if want to reach the production level, still need lots of work to deepin each section
         1. Front-end separation, using node/react as front-end, micro services shoud only provide REST services
         2. REST services module should level up to HATEOAS(https://en.wikipedia.org/wiki/HATEOAS)
         3. This method call is necessary and should not exist:
@@ -383,7 +455,14 @@ Training report
                 Details refer to https://docs.docker.com/compose/compose-file/#resources
         6. Gradle dependence improments, the current gralde building file version is copied from https://stash.aaxisgroup.net/projects/ATH/repos/springcloud-verification/browse
         And simplify by me from 3 files to 2 files: build.gradle and settings.gradle, and the structure in build.gradle is still not good:
+            0) currently structure not support complie with specific version
             1) Variable definition of libs is not good, because of not every module need some of the dependence, like libs.springcloud, need more decoupling
             2) Scope in libs is different, some of them are complie but some are runtime, still, need more decoupling
             3) My advice is not using this ext.libs definition structure any more, each subproject should have different dependence, even this seems redundant in build.gradle, but can avoid redundancy in generated jar file
             4) Less gradle file is better. Finally we just need only one gradle file, not 2, its unnecessary and will have bad development experience
+        7. Batch indexing for elasticsearch should support partical indexing and resume from break-point
+        Should get price and stock from FeignClient in method:
+            /catalog-service/
+                com.aaxis.microservice.training.demo1.service.ESProductIndexService.queryRecords
+        8. Redundant code about search product and search product using elasticsearch
+        9. Redundant config in application.yml of each module

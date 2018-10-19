@@ -32,4 +32,5 @@ public class CatalogServiceApplication {
     public RestTemplate restTemplate() {
         return mRestTemplateBuilder.build();
     }
+
 }
